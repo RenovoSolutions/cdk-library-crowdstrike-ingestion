@@ -112,8 +112,10 @@ export class CrowdStrikeBucket extends s3.Bucket {
       ...props,
     });
 
-    // If we have an orgId, grant bucket write access to all accounts in the organization.
-    // This is useful for allowing multiple accounts in an organization to write to the same bucket.
+    /**
+     * If we have an orgId, grant bucket write access to all accounts in the organization.
+     * This is useful for allowing multiple accounts in an organization to write to the same bucket.
+     */
     let orgId: string | undefined;
     if (props.orgIdParameterArn) {
       orgId = ssm.StringParameter.fromStringParameterArn(
@@ -144,8 +146,10 @@ export class CrowdStrikeBucket extends s3.Bucket {
       );
     }
 
-    // Create an SQS queue for notifications.
-    // If a queueName is provided, use it; otherwise, generate a default name based on the bucket name.
+    /**
+     * Create an SQS queue for notifications.
+     * If a queueName is provided, use it; otherwise, generate a default name based on the bucket name.
+     */
     this.queue = new sqs.Queue(this, 'Queue', {
       queueName: props.queueProps?.queueName || `${this.bucketName}-queue`,
       enforceSSL: true,
@@ -165,9 +169,11 @@ export class CrowdStrikeBucket extends s3.Bucket {
       new s3n.SqsDestination(this.queue),
     );
 
-    // Determine the principal for CrowdStrike.
-    // If the roleProps are provided, use the assumedBy property from there.
-    // Otherwise, create a CrowdStrike principal using the role ARN and external ID from SSM parameters.
+    /**
+     * Determine the principal for CrowdStrike.
+     * If roleProps are provided, use the assumedBy property from there.
+     * Otherwise, create a CrowdStrike principal using the role ARN and external ID from SSM parameters.
+     */
     let crowdStrikePrincipal: iam.IPrincipal;
     if (props.roleProps) {
       crowdStrikePrincipal = props.roleProps.assumedBy;
@@ -197,8 +203,10 @@ export class CrowdStrikeBucket extends s3.Bucket {
       crowdStrikePrincipal = new iam.AnyPrincipal();
     }
 
-    // Create an IAM role for CrowdStrike to assume, granting it access to the resources created in this construct.
-    // The role name can be provided in the props, or a default name will be generated based on the bucket name.
+    /**
+     * Create an IAM role for CrowdStrike to assume, granting it access to the resources created in this construct.
+     * The role name can be provided in the props, or a default name will be generated based on the bucket name.
+     */
     this.role = new iam.Role(this, 'Role', {
       roleName: props.roleProps?.roleName || `${this.bucketName}-role`,
       assumedBy: crowdStrikePrincipal,
@@ -223,8 +231,10 @@ export class CrowdStrikeBucket extends s3.Bucket {
       // Grant the role permissions to use the KMS key for decryption.
       this.key.grantDecrypt(this.role);
 
-      // If an orgId is provided, grant permissions to use it to encrypt/decrypt
-      // for all accounts in the organization.
+      /**
+       * If an orgId is provided, grant permissions to use the KMS key
+       * for encryption and decryption for all accounts in the organization.
+       */
       if (orgId) {
         this.key.grantEncryptDecrypt(new iam.OrganizationPrincipal(orgId));
       }
@@ -236,8 +246,10 @@ export class CrowdStrikeBucket extends s3.Bucket {
       });
     }
 
-    // Output the bucket name, bucket ARN, queue name, and role name for reference.
-    // You will need these values to configure CrowdStrike connectors.
+    /**
+     * Output the bucket name, bucket ARN, queue name, and role name.
+     * You will need these values to configure CrowdStrike connectors.
+     */
     new CfnOutput(this, 'BucketName', {
       value: this.bucketName,
       description: 'The Name of the S3 bucket for CrowdStrike ingestion',

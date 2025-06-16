@@ -1274,6 +1274,152 @@ Uniquely identifies this class.
 
 ---
 
+### CrowdStrikeLogSubscription <a name="CrowdStrikeLogSubscription" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeLogSubscription"></a>
+
+A construct that creates an CloudWatch log group filter subscription for CrowdStrike data ingestion, along with an IAM role for access.
+
+#### Initializers <a name="Initializers" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeLogSubscription.Initializer"></a>
+
+```typescript
+import { CrowdStrikeLogSubscription } from '@renovosolutions/cdk-library-crowdstrike-ingestion'
+
+new CrowdStrikeLogSubscription(scope: Construct, id: string, props: CrowdStrikeLogSubscriptionProps)
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeLogSubscription.Initializer.parameter.scope">scope</a></code> | <code>constructs.Construct</code> | The scope in which this construct is defined. |
+| <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeLogSubscription.Initializer.parameter.id">id</a></code> | <code>string</code> | The scoped construct ID. |
+| <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeLogSubscription.Initializer.parameter.props">props</a></code> | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeLogSubscriptionProps">CrowdStrikeLogSubscriptionProps</a></code> | The properties for the subscription. |
+
+---
+
+##### `scope`<sup>Required</sup> <a name="scope" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeLogSubscription.Initializer.parameter.scope"></a>
+
+- *Type:* constructs.Construct
+
+The scope in which this construct is defined.
+
+---
+
+##### `id`<sup>Required</sup> <a name="id" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeLogSubscription.Initializer.parameter.id"></a>
+
+- *Type:* string
+
+The scoped construct ID.
+
+---
+
+##### `props`<sup>Required</sup> <a name="props" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeLogSubscription.Initializer.parameter.props"></a>
+
+- *Type:* <a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeLogSubscriptionProps">CrowdStrikeLogSubscriptionProps</a>
+
+The properties for the subscription.
+
+---
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeLogSubscription.toString">toString</a></code> | Returns a string representation of this construct. |
+
+---
+
+##### `toString` <a name="toString" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeLogSubscription.toString"></a>
+
+```typescript
+public toString(): string
+```
+
+Returns a string representation of this construct.
+
+#### Static Functions <a name="Static Functions" id="Static Functions"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeLogSubscription.isConstruct">isConstruct</a></code> | Checks if `x` is a construct. |
+
+---
+
+##### ~~`isConstruct`~~ <a name="isConstruct" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeLogSubscription.isConstruct"></a>
+
+```typescript
+import { CrowdStrikeLogSubscription } from '@renovosolutions/cdk-library-crowdstrike-ingestion'
+
+CrowdStrikeLogSubscription.isConstruct(x: any)
+```
+
+Checks if `x` is a construct.
+
+###### `x`<sup>Required</sup> <a name="x" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeLogSubscription.isConstruct.parameter.x"></a>
+
+- *Type:* any
+
+Any object.
+
+---
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeLogSubscription.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
+| <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeLogSubscription.property.logGroup">logGroup</a></code> | <code>aws-cdk-lib.aws_logs.ILogGroup</code> | The log group for which the subscription filter is created. |
+| <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeLogSubscription.property.role">role</a></code> | <code>aws-cdk-lib.aws_iam.IRole</code> | The IAM role that CloudWatch Logs will assume to create the subscription. |
+| <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeLogSubscription.property.subscriptionFilter">subscriptionFilter</a></code> | <code>aws-cdk-lib.aws_logs.CfnSubscriptionFilter</code> | The subscription filter for the log group. |
+
+---
+
+##### `node`<sup>Required</sup> <a name="node" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeLogSubscription.property.node"></a>
+
+```typescript
+public readonly node: Node;
+```
+
+- *Type:* constructs.Node
+
+The tree node.
+
+---
+
+##### `logGroup`<sup>Required</sup> <a name="logGroup" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeLogSubscription.property.logGroup"></a>
+
+```typescript
+public readonly logGroup: ILogGroup;
+```
+
+- *Type:* aws-cdk-lib.aws_logs.ILogGroup
+
+The log group for which the subscription filter is created.
+
+---
+
+##### `role`<sup>Required</sup> <a name="role" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeLogSubscription.property.role"></a>
+
+```typescript
+public readonly role: IRole;
+```
+
+- *Type:* aws-cdk-lib.aws_iam.IRole
+
+The IAM role that CloudWatch Logs will assume to create the subscription.
+
+---
+
+##### `subscriptionFilter`<sup>Required</sup> <a name="subscriptionFilter" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeLogSubscription.property.subscriptionFilter"></a>
+
+```typescript
+public readonly subscriptionFilter: CfnSubscriptionFilter;
+```
+
+- *Type:* aws-cdk-lib.aws_logs.CfnSubscriptionFilter
+
+The subscription filter for the log group.
+
+---
+
+
 ## Structs <a name="Structs" id="Structs"></a>
 
 ### CrowdStrikeBucketProps <a name="CrowdStrikeBucketProps" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucketProps"></a>
@@ -1958,6 +2104,81 @@ Properties for the IAM role.
 
 If you provide this, you must provide the roleProps.assumedBy property,
 and you don't need to provide the crowdStrikeRoleParameterArn and crowdStrikeExternalIdParameterArn.
+
+---
+
+### CrowdStrikeLogSubscriptionProps <a name="CrowdStrikeLogSubscriptionProps" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeLogSubscriptionProps"></a>
+
+Properties for the CrowdStrikeLogSubscription construct.
+
+#### Initializer <a name="Initializer" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeLogSubscriptionProps.Initializer"></a>
+
+```typescript
+import { CrowdStrikeLogSubscriptionProps } from '@renovosolutions/cdk-library-crowdstrike-ingestion'
+
+const crowdStrikeLogSubscriptionProps: CrowdStrikeLogSubscriptionProps = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeLogSubscriptionProps.property.logDestinationArn">logDestinationArn</a></code> | <code>string</code> | The ARN of the log destination logical resource. |
+| <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeLogSubscriptionProps.property.logGroup">logGroup</a></code> | <code>aws-cdk-lib.aws_logs.ILogGroup</code> | The log group to create the subscription filter for. |
+| <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeLogSubscriptionProps.property.filterPattern">filterPattern</a></code> | <code>string</code> | The filter pattern for the subscription filter. |
+| <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeLogSubscriptionProps.property.role">role</a></code> | <code>aws-cdk-lib.aws_iam.IRole</code> | The IAM role that CloudWatch Logs will assume to create the subscription. |
+
+---
+
+##### `logDestinationArn`<sup>Required</sup> <a name="logDestinationArn" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeLogSubscriptionProps.property.logDestinationArn"></a>
+
+```typescript
+public readonly logDestinationArn: string;
+```
+
+- *Type:* string
+
+The ARN of the log destination logical resource.
+
+---
+
+##### `logGroup`<sup>Required</sup> <a name="logGroup" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeLogSubscriptionProps.property.logGroup"></a>
+
+```typescript
+public readonly logGroup: ILogGroup;
+```
+
+- *Type:* aws-cdk-lib.aws_logs.ILogGroup
+
+The log group to create the subscription filter for.
+
+---
+
+##### `filterPattern`<sup>Optional</sup> <a name="filterPattern" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeLogSubscriptionProps.property.filterPattern"></a>
+
+```typescript
+public readonly filterPattern: string;
+```
+
+- *Type:* string
+- *Default:* '%.%' (matches all log events).
+
+The filter pattern for the subscription filter.
+
+---
+
+##### `role`<sup>Optional</sup> <a name="role" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeLogSubscriptionProps.property.role"></a>
+
+```typescript
+public readonly role: IRole;
+```
+
+- *Type:* aws-cdk-lib.aws_iam.IRole
+- *Default:* a new role will be created.
+
+The IAM role that CloudWatch Logs will assume to create the subscription.
+
+If not provided, a new role will be created with the necessary permissions.
 
 ---
 

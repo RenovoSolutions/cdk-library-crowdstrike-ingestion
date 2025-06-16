@@ -1,8 +1,14 @@
 # cdk-library-crowdstrike-ingestion
 
-A CDK library to ease repetitive construct creation for CrowdStrike data ingestion. This library provides a construct that creates an S3 bucket with the necessary configuration for CrowdStrike data ingestion, along with an SQS queue for notifications, an IAM role for access, and optionally a KMS key for encryption.
+A CDK library to ease repetitive construct creation for CrowdStrike data ingestion.
+
+This library provides a construct that creates an S3 bucket with the necessary configuration for CrowdStrike data ingestion, along with an SQS queue for notifications, an IAM role for access, and optionally a KMS key for encryption.
+
+It also provides another construct that handles creating log group subscriptions to a central bucket, along with the role needed for CloudWatch Logs to create the subscription.
 
 ## Features
+
+### CrowdStrike Bucket Construct
 
 - Creates an S3 bucket with appropriate security settings for CrowdStrike data ingestion
 - Creates an SQS queue for bucket notifications with a dead-letter queue
@@ -12,6 +18,13 @@ A CDK library to ease repetitive construct creation for CrowdStrike data ingesti
 - Supports organization-wide access for multi-account setups (read from SSM parameter)
 - Configures bucket policies for logging if needed
 - Provides customization options for all resources
+
+### Log Group Subscription Construct
+
+- Creates a CloudWatch Log Group Subscription to forward logs to a central S3 bucket
+- Automatically creates the necessary IAM role for CloudWatch Logs to create the subscription
+- Supports passing in an existing role if desired
+- Allows customization of the filter pattern for the subscription
 
 ## API Doc
 
@@ -26,9 +39,9 @@ This project is licensed under the Apache License, Version 2.0 - see the [LICENS
 ### TypeScript
 
 ```typescript
-import { Stack, StackProps, Duration, aws_iam as iam } from 'aws-cdk-lib';
+import { Stack, StackProps, Duration, aws_iam as iam, aws_logs as logs } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { CrowdStrikeBucket } from '@renovosolutions/cdk-library-crowdstrike-ingestion';
+import { CrowdStrikeBucket, CrowdStrikeLogSubscription } from '@renovosolutions/cdk-library-crowdstrike-ingestion';
 
 export class CrowdStrikeIngestionStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -65,6 +78,23 @@ export class CrowdStrikeIngestionStack extends Stack {
       loggingBucketSourceName: 'my-logging-bucket', // Allow this bucket to send access logs
       orgIdParameterArn: 'arn:aws:ssm:us-east-1:123456789012:parameter/custom/crowdstrike/orgId', // Allow all accounts in the organization to write to the bucket
     });
+
+    // Example of creating a log group subscription
+    const logGroup = new aws_logs.LogGroup(this, 'MyLogGroup', {
+      logGroupName: 'my-log-group',
+    });
+
+    const subscription = new CrowdStrikeLogSubscription(stack, 'BasicTestSubscription', {
+      logGroup,
+      logDestinationArn: 'arn:aws:logs:us-east-1:123456789012:destination:test-destination',
+    });
+
+    new CrowdStrikeLogSubscription(stack, 'AdvancedTestSubscription', {
+      logGroup,
+      logDestinationArn: 'arn:aws:logs:us-east-1:123456789012:destination:another-test-destination',
+      role: subscription.role,
+      filterPattern: 'error',
+    });
   }
 }
 ```
@@ -77,9 +107,10 @@ from aws_cdk import (
     Duration,
     aws_iam as iam,
     aws_kms as kms,
+    aws_logs as logs,
 )
 from constructs import Construct
-from crowdstrike_ingestion import CrowdStrikeBucket
+from crowdstrike_ingestion import ( CrowdStrikeBucket, CrowdStrikeLogSubscription )
 
 class CrowdStrikeIngestionStack(Stack):
     def __init__(self, scope: Construct, id: str, **kwargs) -> None:
@@ -95,11 +126,11 @@ class CrowdStrikeIngestionStack(Stack):
         CrowdStrikeBucket(self, 'AdvancedBucket',
             bucket_name='my-advanced-crowdstrike-bucket',
             create_kms_key=True,
-            key_props=kms.KeyProps(
+            key_props={
                 alias='crowdstrike-key',
                 enable_key_rotation=True,
                 description='KMS Key for CrowdStrike data encryption'
-            ),
+            },
             queue_props={
                 'queue_name': 'crowdstrike-notifications',
                 'visibility_timeout': Duration.seconds(300)
@@ -112,6 +143,19 @@ class CrowdStrikeIngestionStack(Stack):
             },
             logging_bucket_source_name='my-logging-bucket',  # Allow this bucket to send access logs
             org_id_parameter_arn='arn:aws:ssm:us-east-1:123456789012:parameter/custom/crowdstrike/orgId')  # Allow all accounts in the organization to write to the bucket
+
+        # Example of creating a log group subscription
+        log_group = logs.LogGroup(self, 'MyLogGroup', log_group_name='my-log-group')
+
+        subscription = CrowdStrikeLogSubscription(self, 'BasicTestSubscription',
+            log_group=log_group,
+            log_destination_arn='arn:aws:logs:us-east-1:123456789012:destination:test-destination')
+
+        CrowdStrikeLogSubscription(self, 'AdvancedTestSubscription',
+            log_group=log_group,
+            log_destination_arn='arn:aws:logs:us-east-1:123456789012:destination:another-test-destination',
+            role=subscription.role,
+            filter_pattern='error')
 ```
 
 ### C Sharp
@@ -120,6 +164,7 @@ class CrowdStrikeIngestionStack(Stack):
 using Amazon.CDK;
 using IAM = Amazon.CDK.AWS.IAM;
 using KMS = Amazon.CDK.AWS.KMS;
+using Logs = Amazon.CDK.AWS.Logs;
 using SQS = Amazon.CDK.AWS.SQS;
 using Constructs;
 using System.Collections.Generic;
@@ -165,6 +210,26 @@ namespace CrowdStrikeIngestionExample
                 },
                 LoggingBucketSourceName = "my-logging-bucket", // Allow this bucket to send access logs
                 OrgIdParameterArn = "arn:aws:ssm:us-east-1:123456789012:parameter/custom/crowdstrike/orgId" // Allow all accounts in the organization to write to the bucket
+            });
+
+            // Example of creating a log group subscription
+            var logGroup = new Logs.LogGroup(this, "MyLogGroup", new Logs.LogGroupProps
+            {
+                LogGroupName = "my-log-group"
+            });
+
+            var subscription = new CrowdStrikeLogSubscription(this, "BasicTestSubscription", new CrowdStrikeLogSubscriptionProps
+            {
+                LogGroup = logGroup,
+                LogDestinationArn = "arn:aws:logs:us-east-1:123456789012:destination:test-destination"
+            });
+
+            new CrowdStrikeLogSubscription(this, "AdvancedTestSubscription", new CrowdStrikeLogSubscriptionProps
+            {
+                LogGroup = logGroup,
+                LogDestinationArn = "arn:aws:logs:us-east-1:123456789012:destination:another-test-destination",
+                Role = subscription.Role,
+                FilterPattern = "error"
             });
         }
     }

@@ -1,0 +1,113 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CrowdStrikeLogSubscription creates subscription filter with default properties 1`] = `
+{
+  "Parameters": {
+    "BootstrapVersion": {
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+  },
+  "Resources": {
+    "TestLogGroup4EEF7AD4": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "test-log-group",
+        "RetentionInDays": 731,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "TestSubscriptionRole5781142C": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "logs.",
+                      {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazonaws.com",
+                    ],
+                  ],
+                },
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "logs:PutSubscriptionFilter",
+                    "logs:DescribeSubscriptionFilters",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "arn:aws:logs:us-east-1:123456789012:destination:test-destination",
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "CrossAccountPolicy",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "TestSubscriptionSubscriptionFilter486EA5E6": {
+      "Properties": {
+        "DestinationArn": "arn:aws:logs:us-east-1:123456789012:destination:test-destination",
+        "FilterPattern": "%.%",
+        "LogGroupName": {
+          "Ref": "TestLogGroup4EEF7AD4",
+        },
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "TestSubscriptionRole5781142C",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::Logs::SubscriptionFilter",
+    },
+  },
+  "Rules": {
+    "CheckBootstrapVersion": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Not": [
+              {
+                "Fn::Contains": [
+                  [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                  ],
+                  {
+                    "Ref": "BootstrapVersion",
+                  },
+                ],
+              },
+            ],
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI.",
+        },
+      ],
+    },
+  },
+}
+`;
