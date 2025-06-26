@@ -14,8 +14,8 @@ It also provides another construct that handles creating log group subscriptions
 - Creates an SQS queue for bucket notifications with a dead-letter queue
 - Creates an IAM role that CrowdStrike can assume to access the data
 - Optionally creates a KMS key for encrypting data (to use if the service generating the data wants it)
-- Reads CrowdStrike role and external ID from SSM parameters
-- Supports organization-wide access for multi-account setups (read from SSM parameter)
+- Reads external ID from SSM parameters
+- Supports organization-wide access for multi-account setups
 - Configures bucket policies for logging if needed
 - Provides customization options for all resources
 
@@ -50,7 +50,7 @@ export class CrowdStrikeIngestionStack extends Stack {
     // Basic usage with default settings
     new CrowdStrikeBucket(this, 'BasicBucket', {
       bucketName: 'my-crowdstrike-bucket',
-      crowdStrikeRoleParameterArn: 'arn:aws:ssm:us-east-1:123456789012:parameter/custom/crowdstrike/roleArn',
+      crowdStrikeRoleArn: 'arn:aws:ssm:us-east-1:123456789012:parameter/custom/crowdstrike/roleArn',
       crowdStrikeExternalIdParameterArn: 'arn:aws:ssm:us-east-1:123456789012:parameter/custom/crowdstrike/externalId',
     });
 
@@ -76,7 +76,7 @@ export class CrowdStrikeIngestionStack extends Stack {
         }),
       },
       loggingBucketSourceName: 'my-logging-bucket', // Allow this bucket to send access logs
-      orgIdParameterArn: 'arn:aws:ssm:us-east-1:123456789012:parameter/custom/crowdstrike/orgId', // Allow all accounts in the organization to write to the bucket
+      orgId: 'o-1234567', // Allow all accounts in the organization to write to the bucket
     });
 
     // Example of creating a log group subscription
@@ -119,7 +119,7 @@ class CrowdStrikeIngestionStack(Stack):
         # Basic usage with default settings
         CrowdStrikeBucket(self, 'BasicBucket',
             bucket_name='my-crowdstrike-bucket',
-            crowd_strike_role_parameter_arn='arn:aws:ssm:us-east-1:123456789012:parameter/custom/crowdstrike/roleArn',
+            crowd_strike_role_arn='arn:aws:ssm:us-east-1:123456789012:parameter/custom/crowdstrike/roleArn',
             crowd_strike_external_id_parameter_arn='arn:aws:ssm:us-east-1:123456789012:parameter/custom/crowdstrike/externalId')
 
         # Advanced usage with KMS key and organization access
@@ -142,7 +142,7 @@ class CrowdStrikeIngestionStack(Stack):
                     {'StringEquals': {'sts:ExternalId': 'externalId123'}})
             },
             logging_bucket_source_name='my-logging-bucket',  # Allow this bucket to send access logs
-            org_id_parameter_arn='arn:aws:ssm:us-east-1:123456789012:parameter/custom/crowdstrike/orgId')  # Allow all accounts in the organization to write to the bucket
+            org_id='o-1234567')  # Allow all accounts in the organization to write to the bucket
 
         # Example of creating a log group subscription
         log_group = logs.LogGroup(self, 'MyLogGroup', log_group_name='my-log-group')
@@ -180,7 +180,7 @@ namespace CrowdStrikeIngestionExample
             new CrowdStrikeBucket(this, "BasicBucket", new CrowdStrikeBucketProps
             {
                 BucketName = "my-crowdstrike-bucket",
-                CrowdStrikeRoleParameterArn = "arn:aws:ssm:us-east-1:123456789012:parameter/custom/crowdstrike/roleArn",
+                CrowdStrikeRoleArn = "arn:aws:ssm:us-east-1:123456789012:parameter/custom/crowdstrike/roleArn",
                 CrowdStrikeExternalIdParameterArn = "arn:aws:ssm:us-east-1:123456789012:parameter/custom/crowdstrike/externalId"
             });
 
@@ -209,7 +209,7 @@ namespace CrowdStrikeIngestionExample
                     })
                 },
                 LoggingBucketSourceName = "my-logging-bucket", // Allow this bucket to send access logs
-                OrgIdParameterArn = "arn:aws:ssm:us-east-1:123456789012:parameter/custom/crowdstrike/orgId" // Allow all accounts in the organization to write to the bucket
+                OrgId = "o-1234567" // Allow all accounts in the organization to write to the bucket
             });
 
             // Example of creating a log group subscription

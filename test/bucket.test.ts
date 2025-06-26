@@ -1,3 +1,4 @@
+import { crowdStrikeExternalIdParameterArn, crowdStrikeRoleArn, orgId } from '@renovolive/cdk-library-renovo-constants';
 import {
   Duration,
   Stack,
@@ -21,8 +22,8 @@ describe('CrowdStrikeBucket', () => {
     // WHEN
     new CrowdStrikeBucket(stack, 'TestBucket', {
       bucketName: 'test-crowdstrike-bucket',
-      crowdStrikeRoleParameterArn: 'arn:aws:ssm:us-east-1:123456789012:parameter/custom/role/path',
-      crowdStrikeExternalIdParameterArn: 'arn:aws:ssm:us-east-1:123456789012:parameter/custom/externalId/path',
+      crowdStrikeRoleArn: crowdStrikeRoleArn,
+      crowdStrikeExternalIdParameterArn: crowdStrikeExternalIdParameterArn,
     });
 
     // THEN
@@ -107,9 +108,7 @@ describe('CrowdStrikeBucket', () => {
             },
             Effect: 'Allow',
             Principal: {
-              AWS: {
-                Ref: Match.stringLikeRegexp('TestBucketCrowdStrikeRoleParam'),
-              },
+              AWS: crowdStrikeRoleArn,
             },
           },
         ],
@@ -172,8 +171,8 @@ describe('CrowdStrikeBucket', () => {
     // WHEN
     new CrowdStrikeBucket(stack, 'TestBucket', {
       bucketName: 'test-crowdstrike-bucket',
-      crowdStrikeRoleParameterArn: 'arn:aws:ssm:us-east-1:123456789012:parameter/custom/role/path',
-      crowdStrikeExternalIdParameterArn: 'arn:aws:ssm:us-east-1:123456789012:parameter/custom/externalId/path',
+      crowdStrikeRoleArn: crowdStrikeRoleArn,
+      crowdStrikeExternalIdParameterArn: crowdStrikeExternalIdParameterArn,
       createKmsKey: true,
     });
 
@@ -228,8 +227,8 @@ describe('CrowdStrikeBucket', () => {
     // WHEN
     new CrowdStrikeBucket(stack, 'TestBucket', {
       bucketName: 'test-crowdstrike-bucket',
-      crowdStrikeRoleParameterArn: 'arn:aws:ssm:us-east-1:123456789012:parameter/custom/role/path',
-      crowdStrikeExternalIdParameterArn: 'arn:aws:ssm:us-east-1:123456789012:parameter/custom/externalId/path',
+      crowdStrikeRoleArn: crowdStrikeRoleArn,
+      crowdStrikeExternalIdParameterArn: crowdStrikeExternalIdParameterArn,
       queueProps: {
         queueName: 'custom-queue-name',
         visibilityTimeout: Duration.seconds(300),
@@ -275,8 +274,8 @@ describe('CrowdStrikeBucket', () => {
     // WHEN
     new CrowdStrikeBucket(stack, 'TestBucket', {
       bucketName: 'test-crowdstrike-bucket',
-      crowdStrikeRoleParameterArn: 'arn:aws:ssm:us-east-1:123456789012:parameter/custom/role/path',
-      crowdStrikeExternalIdParameterArn: 'arn:aws:ssm:us-east-1:123456789012:parameter/custom/externalId/path',
+      crowdStrikeRoleArn: crowdStrikeRoleArn,
+      crowdStrikeExternalIdParameterArn: crowdStrikeExternalIdParameterArn,
       createKmsKey: true,
       keyProps: {
         alias: 'custom-key-alias',
@@ -303,9 +302,9 @@ describe('CrowdStrikeBucket', () => {
     // WHEN
     new CrowdStrikeBucket(stack, 'TestBucket', {
       bucketName: 'test-crowdstrike-bucket',
-      crowdStrikeRoleParameterArn: 'arn:aws:ssm:us-east-1:123456789012:parameter/custom/role/path',
-      crowdStrikeExternalIdParameterArn: 'arn:aws:ssm:us-east-1:123456789012:parameter/custom/externalId/path',
-      orgIdParameterArn: 'arn:aws:ssm:us-east-1:123456789012:parameter/custom/orgId/path',
+      crowdStrikeRoleArn: crowdStrikeRoleArn,
+      crowdStrikeExternalIdParameterArn: crowdStrikeExternalIdParameterArn,
+      orgId,
       createKmsKey: true,
     });
 
@@ -388,9 +387,7 @@ describe('CrowdStrikeBucket', () => {
             ],
             Condition: {
               StringEquals: {
-                'aws:PrincipalOrgID': {
-                  Ref: Match.stringLikeRegexp('TestBucketOrgIdParamParameter'),
-                },
+                'aws:PrincipalOrgID': orgId,
               },
             },
           },
@@ -439,15 +436,15 @@ describe('CrowdStrikeBucket', () => {
             Resource: '*',
             Condition: {
               StringEquals: {
-                'aws:PrincipalOrgID': {
-                  Ref: Match.stringLikeRegexp('TestBucketOrgIdParamParameter'),
-                },
+                'aws:PrincipalOrgID': orgId,
               },
             },
           },
         ],
       },
     });
+
+    expect(template.toJSON()).toMatchSnapshot();
   });
 
   test('creates bucket with logging bucket source', () => {
@@ -455,8 +452,8 @@ describe('CrowdStrikeBucket', () => {
     new CrowdStrikeBucket(stack, 'TestBucket', {
       bucketName: 'test-crowdstrike-bucket',
       loggingBucketSourceName: 'source-logging-bucket',
-      crowdStrikeRoleParameterArn: 'arn:aws:ssm:us-east-1:123456789012:parameter/custom/role/path',
-      crowdStrikeExternalIdParameterArn: 'arn:aws:ssm:us-east-1:123456789012:parameter/custom/externalId/path',
+      crowdStrikeRoleArn: crowdStrikeRoleArn,
+      crowdStrikeExternalIdParameterArn: crowdStrikeExternalIdParameterArn,
     });
 
     // THEN
@@ -540,8 +537,8 @@ describe('CrowdStrikeBucket', () => {
     // WHEN
     new CrowdStrikeBucket(stack, 'TestBucket', {
       bucketName: 'test-crowdstrike-bucket',
-      crowdStrikeRoleParameterArn: 'arn:aws:ssm:us-east-1:123456789012:parameter/custom/role/path',
-      crowdStrikeExternalIdParameterArn: 'arn:aws:ssm:us-east-1:123456789012:parameter/custom/externalId/path',
+      crowdStrikeRoleArn: crowdStrikeRoleArn,
+      crowdStrikeExternalIdParameterArn: crowdStrikeExternalIdParameterArn,
     });
 
     // THEN
@@ -558,8 +555,8 @@ describe('CrowdStrikeBucket', () => {
     // WHEN
     new CrowdStrikeBucket(stack, 'TestBucket', {
       bucketName: 'test-crowdstrike-bucket',
-      crowdStrikeRoleParameterArn: 'arn:aws:ssm:us-east-1:123456789012:parameter/custom/role/path',
-      crowdStrikeExternalIdParameterArn: 'arn:aws:ssm:us-east-1:123456789012:parameter/custom/externalId/path',
+      crowdStrikeRoleArn: crowdStrikeRoleArn,
+      crowdStrikeExternalIdParameterArn: crowdStrikeExternalIdParameterArn,
     });
 
     // THEN

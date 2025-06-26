@@ -1,3 +1,4 @@
+import { crowdStrikeLogDestinations } from '@renovolive/cdk-library-renovo-constants';
 import {
   Stack,
   aws_iam as iam,
@@ -19,7 +20,7 @@ describe('CrowdStrikeLogSubscription', () => {
     logGroup = new logs.LogGroup(stack, 'TestLogGroup', {
       logGroupName: 'test-log-group',
     });
-    logDestinationArn = 'arn:aws:logs:us-east-1:123456789012:destination:test-destination';
+    logDestinationArn = crowdStrikeLogDestinations.CLOUDWATCH_US_EAST_1;
   });
 
   test('creates subscription filter with default properties', () => {
@@ -38,7 +39,7 @@ describe('CrowdStrikeLogSubscription', () => {
         Ref: Match.stringLikeRegexp('TestLogGroup'),
       },
       FilterPattern: '%.%',
-      DestinationArn: 'arn:aws:logs:us-east-1:123456789012:destination:test-destination',
+      DestinationArn: crowdStrikeLogDestinations.CLOUDWATCH_US_EAST_1,
     });
 
     // Verify IAM role creation
@@ -75,7 +76,7 @@ describe('CrowdStrikeLogSubscription', () => {
                   'logs:DescribeSubscriptionFilters',
                 ],
                 Effect: 'Allow',
-                Resource: 'arn:aws:logs:us-east-1:123456789012:destination:test-destination',
+                Resource: crowdStrikeLogDestinations.CLOUDWATCH_US_EAST_1,
               },
             ],
           },
@@ -157,7 +158,7 @@ describe('CrowdStrikeLogSubscription', () => {
 
   test('handles cross-region log destination correctly', () => {
     // GIVEN
-    const crossRegionDestination = 'arn:aws:logs:us-west-2:123456789012:destination:test-destination';
+    const crossRegionDestination = crowdStrikeLogDestinations.CLOUDWATCH_US_WEST_2;
 
     // WHEN
     new CrowdStrikeLogSubscription(stack, 'TestSubscription', {
@@ -205,7 +206,7 @@ describe('CrowdStrikeLogSubscription', () => {
                   'logs:DescribeSubscriptionFilters',
                 ],
                 Effect: 'Allow',
-                Resource: 'arn:aws:logs:us-west-2:123456789012:destination:test-destination',
+                Resource: crowdStrikeLogDestinations.CLOUDWATCH_US_WEST_2,
               },
             ],
           },
