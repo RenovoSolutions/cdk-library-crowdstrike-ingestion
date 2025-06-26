@@ -54,7 +54,7 @@ exports[`CrowdStrikeLogSubscription creates subscription filter with default pro
                     "logs:DescribeSubscriptionFilters",
                   ],
                   "Effect": "Allow",
-                  "Resource": "arn:aws:logs:us-east-1:123456789012:destination:test-destination",
+                  "Resource": "arn:aws:logs:us-east-1:974567410476:destination:renovo-crowdstrike-connector-cloudwatch-logs-destination-us-east-1",
                 },
               ],
               "Version": "2012-10-17",
@@ -67,7 +67,7 @@ exports[`CrowdStrikeLogSubscription creates subscription filter with default pro
     },
     "TestSubscriptionSubscriptionFilter486EA5E6": {
       "Properties": {
-        "DestinationArn": "arn:aws:logs:us-east-1:123456789012:destination:test-destination",
+        "DestinationArn": "arn:aws:logs:us-east-1:974567410476:destination:renovo-crowdstrike-connector-cloudwatch-logs-destination-us-east-1",
         "FilterPattern": "%.%",
         "LogGroupName": {
           "Ref": "TestLogGroup4EEF7AD4",

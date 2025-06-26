@@ -90,6 +90,10 @@
       "type": "build"
     },
     {
+      "name": "@renovolive/cdk-library-renovo-constants",
+      "type": "bundled"
+    },
+    {
       "name": "aws-cdk-lib",
       "version": "^2.200.1",
       "type": "peer"

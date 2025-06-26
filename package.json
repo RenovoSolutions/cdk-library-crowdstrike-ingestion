@@ -65,6 +65,12 @@
     "aws-cdk-lib": "^2.200.1",
     "constructs": "^10.0.5"
   },
+  "dependencies": {
+    "@renovolive/cdk-library-renovo-constants": "^0.0.2"
+  },
+  "bundledDependencies": [
+    "@renovolive/cdk-library-renovo-constants"
+  ],
   "keywords": [
     "aws-cdk",
     "aws-cdk-construct",

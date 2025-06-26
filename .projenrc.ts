@@ -19,6 +19,9 @@ const project = new awscdk.AwsCdkConstructLibrary({
     'crowdstrike',
     'projen',
   ],
+  bundledDeps: [
+    '@renovolive/cdk-library-renovo-constants',
+  ],
   depsUpgrade: true,
   depsUpgradeOptions: {
     workflow: false,

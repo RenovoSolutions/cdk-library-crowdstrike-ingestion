@@ -44,11 +44,11 @@ export interface CrowdStrikeBucketProps extends s3.BucketProps {
    */
   readonly roleProps?: iam.RoleProps;
   /**
-   * The ARN of the SSM parameter containing the CrowdStrike role ARN.
+   * The CrowdStrike role ARN.
    *
    * Required unless the role principal is provided directly in the roleProps.
    */
-  readonly crowdStrikeRoleParameterArn?: string;
+  readonly crowdStrikeRoleArn?: string;
   /**
    * The ARN of the SSM parameter containing the CrowdStrike external ID.
    *
@@ -56,13 +56,13 @@ export interface CrowdStrikeBucketProps extends s3.BucketProps {
    */
   readonly crowdStrikeExternalIdParameterArn?: string;
   /**
-   * The ARN of the SSM parameter containing the organization ID.
+   * The organization ID.
    * If provided, the bucket will allow write access to all accounts in the organization.
    * If there is a KMS key, it will also allow encrypt/decrypt access to the organization.
    *
    * @default - none
    */
-  readonly orgIdParameterArn?: string;
+  readonly orgId?: string;
   /**
    * The name of the S3 bucket that will be sending S3 access logs to this bucket.
    * This is used to configure the bucket policy to allow logging from that bucket.
@@ -116,14 +116,8 @@ export class CrowdStrikeBucket extends s3.Bucket {
      * If we have an orgId, grant bucket write access to all accounts in the organization.
      * This is useful for allowing multiple accounts in an organization to write to the same bucket.
      */
-    let orgId: string | undefined;
-    if (props.orgIdParameterArn) {
-      orgId = ssm.StringParameter.fromStringParameterArn(
-        this,
-        'OrgIdParam',
-        props.orgIdParameterArn,
-      ).stringValue;
-      this.grantWrite(new iam.OrganizationPrincipal(orgId));
+    if (props.orgId) {
+      this.grantWrite(new iam.OrganizationPrincipal(props.orgId));
     }
 
     // If a logging bucket source name is provided, add a policy to allow that bucket to write logs to this bucket.
@@ -177,12 +171,8 @@ export class CrowdStrikeBucket extends s3.Bucket {
     let crowdStrikePrincipal: iam.IPrincipal;
     if (props.roleProps) {
       crowdStrikePrincipal = props.roleProps.assumedBy;
-    } else if (props.crowdStrikeRoleParameterArn && props.crowdStrikeExternalIdParameterArn) {
-      const crowdStrikeRoleArn = ssm.StringParameter.fromStringParameterArn(
-        this,
-        'CrowdStrikeRoleParam',
-        props.crowdStrikeRoleParameterArn,
-      ).stringValue;
+    } else if (props.crowdStrikeRoleArn && props.crowdStrikeExternalIdParameterArn) {
+      const crowdStrikeRoleArn = props.crowdStrikeRoleArn;
 
       const crowdStrikeExternalId = ssm.StringParameter.fromStringParameterArn(
         this,
@@ -235,8 +225,8 @@ export class CrowdStrikeBucket extends s3.Bucket {
        * If an orgId is provided, grant permissions to use the KMS key
        * for encryption and decryption for all accounts in the organization.
        */
-      if (orgId) {
-        this.key.grantEncryptDecrypt(new iam.OrganizationPrincipal(orgId));
+      if (props.orgId) {
+        this.key.grantEncryptDecrypt(new iam.OrganizationPrincipal(props.orgId));
       }
 
       // Output the KMS key ARN for reference.
