@@ -1474,10 +1474,10 @@ const crowdStrikeBucketProps: CrowdStrikeBucketProps = { ... }
 | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucketProps.property.websiteRoutingRules">websiteRoutingRules</a></code> | <code>aws-cdk-lib.aws_s3.RoutingRule[]</code> | Rules that define when a redirect is applied and the redirect behavior. |
 | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucketProps.property.createKmsKey">createKmsKey</a></code> | <code>boolean</code> | Whether to create a KMS key for the bucket. |
 | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucketProps.property.crowdStrikeExternalIdParameterArn">crowdStrikeExternalIdParameterArn</a></code> | <code>string</code> | The ARN of the SSM parameter containing the CrowdStrike external ID. |
-| <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucketProps.property.crowdStrikeRoleParameterArn">crowdStrikeRoleParameterArn</a></code> | <code>string</code> | The ARN of the SSM parameter containing the CrowdStrike role ARN. |
+| <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucketProps.property.crowdStrikeRoleArn">crowdStrikeRoleArn</a></code> | <code>string</code> | The CrowdStrike role ARN. |
 | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucketProps.property.keyProps">keyProps</a></code> | <code>aws-cdk-lib.aws_kms.KeyProps</code> | Properties for the KMS key. |
 | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucketProps.property.loggingBucketSourceName">loggingBucketSourceName</a></code> | <code>string</code> | The name of the S3 bucket that will be sending S3 access logs to this bucket. |
-| <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucketProps.property.orgIdParameterArn">orgIdParameterArn</a></code> | <code>string</code> | The ARN of the SSM parameter containing the organization ID. |
+| <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucketProps.property.orgId">orgId</a></code> | <code>string</code> | The organization ID. |
 | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucketProps.property.queueProps">queueProps</a></code> | <code>aws-cdk-lib.aws_sqs.QueueProps</code> | Properties for the SQS queue. |
 | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucketProps.property.roleProps">roleProps</a></code> | <code>aws-cdk-lib.aws_iam.RoleProps</code> | Properties for the IAM role. |
 
@@ -2020,15 +2020,15 @@ Required unless the role principal is provided directly in the roleProps.
 
 ---
 
-##### `crowdStrikeRoleParameterArn`<sup>Optional</sup> <a name="crowdStrikeRoleParameterArn" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucketProps.property.crowdStrikeRoleParameterArn"></a>
+##### `crowdStrikeRoleArn`<sup>Optional</sup> <a name="crowdStrikeRoleArn" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucketProps.property.crowdStrikeRoleArn"></a>
 
 ```typescript
-public readonly crowdStrikeRoleParameterArn: string;
+public readonly crowdStrikeRoleArn: string;
 ```
 
 - *Type:* string
 
-The ARN of the SSM parameter containing the CrowdStrike role ARN.
+The CrowdStrike role ARN.
 
 Required unless the role principal is provided directly in the roleProps.
 
@@ -2062,16 +2062,16 @@ This is used to configure the bucket policy to allow logging from that bucket.
 
 ---
 
-##### `orgIdParameterArn`<sup>Optional</sup> <a name="orgIdParameterArn" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucketProps.property.orgIdParameterArn"></a>
+##### `orgId`<sup>Optional</sup> <a name="orgId" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucketProps.property.orgId"></a>
 
 ```typescript
-public readonly orgIdParameterArn: string;
+public readonly orgId: string;
 ```
 
 - *Type:* string
 - *Default:* none
 
-The ARN of the SSM parameter containing the organization ID.
+The organization ID.
 
 If provided, the bucket will allow write access to all accounts in the organization.
 If there is a KMS key, it will also allow encrypt/decrypt access to the organization.
