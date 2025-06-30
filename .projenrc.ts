@@ -2,7 +2,7 @@ import { awscdk, javascript } from 'projen';
 const project = new awscdk.AwsCdkConstructLibrary({
   author: 'Renovo Solutions',
   authorAddress: 'webmaster+cdk@renovo1.com',
-  cdkVersion: '2.200.1',
+  cdkVersion: '2.202.0',
   defaultReleaseBranch: 'master',
   jsiiVersion: '~5.8.0',
   name: '@renovosolutions/cdk-library-crowdstrike-ingestion',
@@ -32,7 +32,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
   eslint: true,
   publishToPypi: {
     distName: 'renovosolutions.aws-cdk-crowdstrike-ingestion',
-    module: 'crowdstrike_ingestion',
+    module: 'renovosolutions_crowdstrike_ingestion',
   },
   publishToNuget: {
     dotNetNamespace: 'renovosolutions',
