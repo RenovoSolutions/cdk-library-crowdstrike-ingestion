@@ -10,14 +10,89 @@ exports[`CrowdStrikeLogSubscription creates subscription filter with default pro
     },
   },
   "Resources": {
+    "TestKey4CACAF33": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "EnableKeyRotation": true,
+        "KeyPolicy": {
+          "Statement": [
+            {
+              "Action": "kms:*",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":root",
+                    ],
+                  ],
+                },
+              },
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::KMS::Key",
+      "UpdateReplacePolicy": "Retain",
+    },
     "TestLogGroup4EEF7AD4": {
       "DeletionPolicy": "Retain",
       "Properties": {
+        "KmsKeyId": {
+          "Fn::GetAtt": [
+            "TestKey4CACAF33",
+            "Arn",
+          ],
+        },
         "LogGroupName": "test-log-group",
         "RetentionInDays": 731,
       },
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
+    },
+    "TestSubscriptionPolicy0EC87E1B": {
+      "Properties": {
+        "Description": "",
+        "Path": "/",
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "logs:PutSubscriptionFilter",
+                "logs:DescribeSubscriptionFilters",
+              ],
+              "Effect": "Allow",
+              "Resource": "arn:aws:logs:us-east-1:123456789012:destination:test-destination",
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:GenerateDataKey",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "TestKey4CACAF33",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::ManagedPolicy",
     },
     "TestSubscriptionRole5781142C": {
       "Properties": {
@@ -44,22 +119,9 @@ exports[`CrowdStrikeLogSubscription creates subscription filter with default pro
           ],
           "Version": "2012-10-17",
         },
-        "Policies": [
+        "ManagedPolicyArns": [
           {
-            "PolicyDocument": {
-              "Statement": [
-                {
-                  "Action": [
-                    "logs:PutSubscriptionFilter",
-                    "logs:DescribeSubscriptionFilters",
-                  ],
-                  "Effect": "Allow",
-                  "Resource": "arn:aws:logs:us-east-1:123456789012:destination:test-destination",
-                },
-              ],
-              "Version": "2012-10-17",
-            },
-            "PolicyName": "CrossAccountPolicy",
+            "Ref": "TestSubscriptionPolicy0EC87E1B",
           },
         ],
       },

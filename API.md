@@ -2167,6 +2167,7 @@ const crowdStrikeLogSubscriptionProps: CrowdStrikeLogSubscriptionProps = { ... }
 | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeLogSubscriptionProps.property.logDestinationArn">logDestinationArn</a></code> | <code>string</code> | The ARN of the log destination logical resource. |
 | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeLogSubscriptionProps.property.logGroup">logGroup</a></code> | <code>aws-cdk-lib.aws_logs.ILogGroup</code> | The log group to create the subscription filter for. |
 | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeLogSubscriptionProps.property.filterPattern">filterPattern</a></code> | <code>string</code> | The filter pattern for the subscription filter. |
+| <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeLogSubscriptionProps.property.kmsKey">kmsKey</a></code> | <code>aws-cdk-lib.aws_kms.IKey</code> | The KMS key attached to the log group, if any. |
 | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeLogSubscriptionProps.property.role">role</a></code> | <code>aws-cdk-lib.aws_iam.IRole</code> | The IAM role that CloudWatch Logs will assume to create the subscription. |
 
 ---
@@ -2205,6 +2206,25 @@ public readonly filterPattern: string;
 - *Default:* '%.%' (matches all log events).
 
 The filter pattern for the subscription filter.
+
+---
+
+##### `kmsKey`<sup>Optional</sup> <a name="kmsKey" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeLogSubscriptionProps.property.kmsKey"></a>
+
+```typescript
+public readonly kmsKey: IKey;
+```
+
+- *Type:* aws-cdk-lib.aws_kms.IKey
+- *Default:* no KMS key.
+
+The KMS key attached to the log group, if any.
+
+If this is provided, the necessary KMS permissions will be added to the role.
+If not provided, a warning will be issued to ensure that the log group is not encrypted,
+because deployment will fail due to missing permissions if a KMS key is used and not accounted for.
+If a role is provided, it is assumed that the role has the necessary permissions, and a warning
+will not be issued if a KMS key is not provided.
 
 ---
 
