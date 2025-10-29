@@ -1,4 +1,5 @@
 import {
+  Aspects,
   Duration,
   Stack,
   aws_iam as iam,
@@ -8,6 +9,10 @@ import {
   Match,
   Template,
 } from 'aws-cdk-lib/assertions';
+import {
+  AwsSolutionsChecks,
+  NIST80053R5Checks,
+} from 'cdk-nag';
 import { CrowdStrikeBucket } from '../src/bucket';
 
 describe('CrowdStrikeBucket', () => {
@@ -25,8 +30,22 @@ describe('CrowdStrikeBucket', () => {
       crowdStrikeExternalIdParameterArn: 'arn:aws:ssm:us-east-1:123456789012:parameter/custom/externalId/path',
     });
 
+    // Apply cdk-nag aspects
+    Aspects.of(stack).add(new AwsSolutionsChecks());
+    Aspects.of(stack).add(new NIST80053R5Checks());
+
     // THEN
     const template = Template.fromStack(stack);
+
+    // Check for cdk-nag errors
+    const errors = Annotations.fromStack(stack).findError('*', Match.anyValue());
+    if (errors.length > 0) {
+      console.error('Error Annotations:');
+      errors.forEach(error => {
+        console.error(`  [${error.id}] ${error.entry.data}`);
+      });
+    }
+    expect(errors).toHaveLength(0);
 
     // Verify bucket creation with expected properties
     template.hasResourceProperties('AWS::S3::Bucket', {
@@ -175,8 +194,22 @@ describe('CrowdStrikeBucket', () => {
       createKmsKey: true,
     });
 
+    // Apply cdk-nag aspects
+    Aspects.of(stack).add(new AwsSolutionsChecks());
+    Aspects.of(stack).add(new NIST80053R5Checks());
+
     // THEN
     const template = Template.fromStack(stack);
+
+    // Check for cdk-nag errors
+    const errors = Annotations.fromStack(stack).findError('*', Match.anyValue());
+    if (errors.length > 0) {
+      console.error('Error Annotations:');
+      errors.forEach(error => {
+        console.error(`  [${error.id}] ${error.entry.data}`);
+      });
+    }
+    expect(errors).toHaveLength(0);
 
     // Verify KMS key creation
     template.hasResourceProperties('AWS::KMS::Key', {
@@ -191,7 +224,7 @@ describe('CrowdStrikeBucket', () => {
           ],
         ],
       },
-      EnableKeyRotation: false,
+      EnableKeyRotation: true,
       MultiRegion: true,
     });
 
@@ -234,8 +267,22 @@ describe('CrowdStrikeBucket', () => {
       },
     });
 
+    // Apply cdk-nag aspects
+    Aspects.of(stack).add(new AwsSolutionsChecks());
+    Aspects.of(stack).add(new NIST80053R5Checks());
+
     // THEN
     const template = Template.fromStack(stack);
+
+    // Check for cdk-nag errors
+    const errors = Annotations.fromStack(stack).findError('*', Match.anyValue());
+    if (errors.length > 0) {
+      console.error('Error Annotations:');
+      errors.forEach(error => {
+        console.error(`  [${error.id}] ${error.entry.data}`);
+      });
+    }
+    expect(errors).toHaveLength(0);
 
     // Verify SQS queue with custom name and properties
     template.hasResourceProperties('AWS::SQS::Queue', {
@@ -262,6 +309,16 @@ describe('CrowdStrikeBucket', () => {
     // THEN
     const template = Template.fromStack(stack);
 
+    // Check for cdk-nag errors
+    const errors = Annotations.fromStack(stack).findError('*', Match.anyValue());
+    if (errors.length > 0) {
+      console.error('Error Annotations:');
+      errors.forEach(error => {
+        console.error(`  [${error.id}] ${error.entry.data}`);
+      });
+    }
+    expect(errors).toHaveLength(0);
+
     // Verify IAM role with custom name and properties
     template.hasResourceProperties('AWS::IAM::Role', {
       RoleName: 'custom-role-name',
@@ -283,8 +340,22 @@ describe('CrowdStrikeBucket', () => {
       },
     });
 
+    // Apply cdk-nag aspects
+    Aspects.of(stack).add(new AwsSolutionsChecks());
+    Aspects.of(stack).add(new NIST80053R5Checks());
+
     // THEN
     const template = Template.fromStack(stack);
+
+    // Check for cdk-nag errors
+    const errors = Annotations.fromStack(stack).findError('*', Match.anyValue());
+    if (errors.length > 0) {
+      console.error('Error Annotations:');
+      errors.forEach(error => {
+        console.error(`  [${error.id}] ${error.entry.data}`);
+      });
+    }
+    expect(errors).toHaveLength(0);
 
     // Verify KMS key with custom properties
     template.hasResourceProperties('AWS::KMS::Key', {
@@ -307,8 +378,22 @@ describe('CrowdStrikeBucket', () => {
       createKmsKey: true,
     });
 
+    // Apply cdk-nag aspects
+    Aspects.of(stack).add(new AwsSolutionsChecks());
+    Aspects.of(stack).add(new NIST80053R5Checks());
+
     // THEN
     const template = Template.fromStack(stack);
+
+    // Check for cdk-nag errors
+    const errors = Annotations.fromStack(stack).findError('*', Match.anyValue());
+    if (errors.length > 0) {
+      console.error('Error Annotations:');
+      errors.forEach(error => {
+        console.error(`  [${error.id}] ${error.entry.data}`);
+      });
+    }
+    expect(errors).toHaveLength(0);
 
     // Verify bucket policy allows organization access
     template.hasResourceProperties('AWS::S3::BucketPolicy', {
@@ -350,40 +435,29 @@ describe('CrowdStrikeBucket', () => {
           },
           {
             Action: [
-              's3:DeleteObject*',
               's3:PutObject',
-              's3:PutObjectLegalHold',
-              's3:PutObjectRetention',
-              's3:PutObjectTagging',
-              's3:PutObjectVersionTagging',
-              's3:Abort*',
+              's3:PutObjectAcl',
+              's3:DeleteObject',
+              's3:AbortMultipartUpload',
             ],
             Effect: 'Allow',
             Principal: {
               AWS: '*',
             },
-            Resource: [
-              {
-                'Fn::GetAtt': [
-                  Match.stringLikeRegexp('TestBucket'),
-                  'Arn',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  {
+                    'Fn::GetAtt': [
+                      Match.stringLikeRegexp('TestBucket'),
+                      'Arn',
+                    ],
+                  },
+                  '/*',
                 ],
-              },
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    {
-                      'Fn::GetAtt': [
-                        Match.stringLikeRegexp('TestBucket'),
-                        'Arn',
-                      ],
-                    },
-                    '/*',
-                  ],
-                ],
-              },
-            ],
+              ],
+            },
             Condition: {
               StringEquals: {
                 'aws:PrincipalOrgID': 'o-1234567890',
@@ -423,10 +497,13 @@ describe('CrowdStrikeBucket', () => {
           },
           {
             Action: [
-              'kms:Decrypt',
               'kms:Encrypt',
-              'kms:ReEncrypt*',
-              'kms:GenerateDataKey*',
+              'kms:Decrypt',
+              'kms:ReEncryptTo',
+              'kms:ReEncryptFrom',
+              'kms:GenerateDataKey',
+              'kms:GenerateDataKeyWithoutPlaintext',
+              'kms:DescribeKey',
             ],
             Effect: 'Allow',
             Principal: {
@@ -453,8 +530,22 @@ describe('CrowdStrikeBucket', () => {
       crowdStrikeExternalIdParameterArn: 'arn:aws:ssm:us-east-1:123456789012:parameter/custom/externalId/path',
     });
 
+    // Apply cdk-nag aspects
+    Aspects.of(stack).add(new AwsSolutionsChecks());
+    Aspects.of(stack).add(new NIST80053R5Checks());
+
     // THEN
     const template = Template.fromStack(stack);
+
+    // Check for cdk-nag errors
+    const errors = Annotations.fromStack(stack).findError('*', Match.anyValue());
+    if (errors.length > 0) {
+      console.error('Error Annotations:');
+      errors.forEach(error => {
+        console.error(`  [${error.id}] ${error.entry.data}`);
+      });
+    }
+    expect(errors).toHaveLength(0);
 
     // Verify bucket policy allows logging from source bucket
     template.hasResourceProperties('AWS::S3::BucketPolicy', {
@@ -538,8 +629,22 @@ describe('CrowdStrikeBucket', () => {
       crowdStrikeExternalIdParameterArn: 'arn:aws:ssm:us-east-1:123456789012:parameter/custom/externalId/path',
     });
 
+    // Apply cdk-nag aspects
+    Aspects.of(stack).add(new AwsSolutionsChecks());
+    Aspects.of(stack).add(new NIST80053R5Checks());
+
     // THEN
     const template = Template.fromStack(stack);
+
+    // Check for cdk-nag errors
+    const errors = Annotations.fromStack(stack).findError('*', Match.anyValue());
+    if (errors.length > 0) {
+      console.error('Error Annotations:');
+      errors.forEach(error => {
+        console.error(`  [${error.id}] ${error.entry.data}`);
+      });
+    }
+    expect(errors).toHaveLength(0);
 
     // Verify bucket has RETAIN removal policy
     template.hasResource('AWS::S3::Bucket', {
@@ -556,18 +661,35 @@ describe('CrowdStrikeBucket', () => {
       crowdStrikeExternalIdParameterArn: 'arn:aws:ssm:us-east-1:123456789012:parameter/custom/externalId/path',
     });
 
+    // Apply cdk-nag aspects
+    Aspects.of(stack).add(new AwsSolutionsChecks());
+    Aspects.of(stack).add(new NIST80053R5Checks());
+
     // THEN
     const template = Template.fromStack(stack);
 
-    // Verify role has permissions to read from bucket and consume messages from SQS queue
-    template.hasResourceProperties('AWS::IAM::Policy', {
+    // Check for cdk-nag errors
+    const errors = Annotations.fromStack(stack).findError('*', Match.anyValue());
+    if (errors.length > 0) {
+      console.error('Error Annotations:');
+      errors.forEach(error => {
+        console.error(`  [${error.id}] ${error.entry.data}`);
+      });
+    }
+    expect(errors).toHaveLength(0);
+
+    // Verify role has permissions to read from bucket (managed policy)
+    template.hasResourceProperties('AWS::IAM::ManagedPolicy', {
       PolicyDocument: {
         Statement: [
           {
             Action: [
-              's3:GetObject*',
-              's3:GetBucket*',
-              's3:List*',
+              's3:GetObject',
+              's3:GetObjectVersion',
+              's3:GetObjectTagging',
+              's3:ListBucket',
+              's3:ListBucketVersions',
+              's3:GetBucketLocation',
             ],
             Effect: 'Allow',
             Resource: [
@@ -593,6 +715,14 @@ describe('CrowdStrikeBucket', () => {
               },
             ],
           },
+        ],
+      },
+    });
+
+    // Verify role has permissions to consume messages from SQS queue (managed policy)
+    template.hasResourceProperties('AWS::IAM::ManagedPolicy', {
+      PolicyDocument: {
+        Statement: [
           {
             Action: [
               'sqs:ReceiveMessage',
@@ -619,6 +749,10 @@ describe('CrowdStrikeBucket', () => {
     new CrowdStrikeBucket(stack, 'TestBucket', {
       bucketName: 'test-crowdstrike-bucket',
     });
+
+    // Apply cdk-nag aspects
+    Aspects.of(stack).add(new AwsSolutionsChecks());
+    Aspects.of(stack).add(new NIST80053R5Checks());
 
     // THEN
     Annotations.fromStack(stack).hasError(

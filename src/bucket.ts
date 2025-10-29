@@ -1,5 +1,6 @@
 import {
   Annotations,
+  Aspects,
   CfnOutput,
   RemovalPolicy,
   Stack,
@@ -10,6 +11,7 @@ import {
   aws_sqs as sqs,
   aws_ssm as ssm,
 } from 'aws-cdk-lib';
+import { NagSuppressions } from 'cdk-nag';
 import { Construct } from 'constructs';
 
 /**
@@ -104,7 +106,7 @@ export class CrowdStrikeBucket extends s3.Bucket {
    */
   constructor(scope: Construct, id: string, props: CrowdStrikeBucketProps) {
     super(scope, id, {
-      encryption: s3.BucketEncryption.S3_MANAGED,
+      encryption: s3.BucketEncryption.S3_MANAGED, // Not using KMS encryption due to complexity with CrowdStrike integration
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
       enforceSSL: true,
       versioned: true,
@@ -117,7 +119,17 @@ export class CrowdStrikeBucket extends s3.Bucket {
      * This is useful for allowing multiple accounts in an organization to write to the same bucket.
      */
     if (props.orgId) {
-      this.grantWrite(new iam.OrganizationPrincipal(props.orgId));
+      const organizationBucketPolicy = new iam.PolicyStatement({
+        actions: [
+          's3:PutObject',
+          's3:PutObjectAcl',
+          's3:DeleteObject',
+          's3:AbortMultipartUpload',
+        ],
+        resources: [this.arnForObjects('*')],
+        principals: [new iam.OrganizationPrincipal(props.orgId)],
+      });
+      this.addToResourcePolicy(organizationBucketPolicy);
     }
 
     // If a logging bucket source name is provided, add a policy to allow that bucket to write logs to this bucket.
@@ -147,6 +159,7 @@ export class CrowdStrikeBucket extends s3.Bucket {
     this.queue = new sqs.Queue(this, 'Queue', {
       queueName: props.queueProps?.queueName || `${this.bucketName}-queue`,
       enforceSSL: true,
+      encryption: sqs.QueueEncryption.SQS_MANAGED, // Not using KMS encryption due to complexity with CrowdStrike integration
       deadLetterQueue: {
         maxReceiveCount: 5,
         queue: new sqs.Queue(this, 'DLQ', {
@@ -203,30 +216,88 @@ export class CrowdStrikeBucket extends s3.Bucket {
       ...props.roleProps,
     });
 
-    // Grant the role permissions to read from the bucket and consume messages from the SQS queue.
-    this.grantRead(this.role);
-    this.queue.grantConsumeMessages(this.role);
+    // Grant the role permissions to read from the bucket and consume messages from the SQS queue
+    const bucketPolicy = new iam.ManagedPolicy(this, 'BucketAccessPolicy', {
+      statements: [
+        new iam.PolicyStatement({
+          actions: [
+            's3:GetObject',
+            's3:GetObjectVersion',
+            's3:GetObjectTagging',
+            's3:ListBucket',
+            's3:ListBucketVersions',
+            's3:GetBucketLocation',
+          ],
+          resources: [
+            this.bucketArn,
+            this.arnForObjects('*'),
+          ],
+        }),
+      ],
+    });
+    this.role.addManagedPolicy(bucketPolicy);
+
+    const queuePolicy = new iam.ManagedPolicy(this, 'QueueAccessPolicy', {
+      statements: [
+        new iam.PolicyStatement({
+          actions: [
+            'sqs:ReceiveMessage',
+            'sqs:ChangeMessageVisibility',
+            'sqs:GetQueueUrl',
+            'sqs:DeleteMessage',
+            'sqs:GetQueueAttributes',
+          ],
+          resources: [this.queue.queueArn],
+        }),
+      ],
+    });
+    this.role.addManagedPolicy(queuePolicy);
 
     // If createKmsKey is true, create a KMS key for the data.
     if (props.createKmsKey) {
       this.key = new kms.Key(this, 'Key', {
         alias: `alias/${this.bucketName}`,
         removalPolicy: RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE,
-        enableKeyRotation: false,
+        enableKeyRotation: true,
         multiRegion: true,
         description: `KMS Key for CrowdStrike ingestion bucket ${this.bucketName}`,
         ...props.keyProps,
       });
 
       // Grant the role permissions to use the KMS key for decryption.
-      this.key.grantDecrypt(this.role);
+      const keyDecryptPolicy = new iam.ManagedPolicy(this, 'KeyDecryptPolicy', {
+        statements: [
+          new iam.PolicyStatement({
+            actions: [
+              'kms:Decrypt',
+              'kms:DescribeKey',
+              'kms:GenerateDataKey',
+            ],
+            resources: [this.key.keyArn],
+          }),
+        ],
+      });
+      this.role.addManagedPolicy(keyDecryptPolicy);
 
       /**
        * If an orgId is provided, grant permissions to use the KMS key
        * for encryption and decryption for all accounts in the organization.
        */
       if (props.orgId) {
-        this.key.grantEncryptDecrypt(new iam.OrganizationPrincipal(props.orgId));
+        const organizationKeyPolicy = new iam.PolicyStatement({
+          actions: [
+            'kms:Encrypt',
+            'kms:Decrypt',
+            'kms:ReEncryptTo',
+            'kms:ReEncryptFrom',
+            'kms:GenerateDataKey',
+            'kms:GenerateDataKeyWithoutPlaintext',
+            'kms:DescribeKey',
+          ],
+          resources: ['*'],
+          principals: [new iam.OrganizationPrincipal(props.orgId)],
+        });
+        this.key.addToResourcePolicy(organizationKeyPolicy);
       }
 
       // Output the KMS key ARN for reference.
@@ -235,6 +306,86 @@ export class CrowdStrikeBucket extends s3.Bucket {
         description: 'The ARN of the KMS key for CrowdStrike ingestion',
       });
     }
+
+    NagSuppressions.addResourceSuppressions(
+      this,
+      [
+        {
+          id: 'NIST.800.53.R5-S3DefaultEncryptionKMS',
+          reason: 'Not using KMS encryption due to complexity with CrowdStrike integration.',
+        },
+        {
+          id: 'NIST.800.53.R5-S3BucketReplicationEnabled',
+          reason: 'Replication is not required for CrowdStrike ingestion buckets because the data is sent directly to CrowdStrike.',
+        },
+        {
+          id: 'NIST.800.53.R5-S3BucketLoggingEnabled',
+          reason: 'Access logging is not required for CrowdStrike ingestion buckets because they are normally themselves access log destinations.',
+        },
+        {
+          id: 'AwsSolutions-S1',
+          reason: 'Access logging is not required for CrowdStrike ingestion buckets because they are normally themselves access log destinations.',
+        },
+        {
+          id: 'AwsSolutions-IAM5',
+          reason: 'The bucket policy needs to grant access to all the objects in the bucket to be useful.',
+          appliesTo: [{
+            regex: '/^Resource::<.*\\.Arn>\\/\\*$/',
+          }],
+        },
+      ],
+      true,
+    );
+
+    NagSuppressions.addResourceSuppressions(
+      this.role,
+      [
+        {
+          id: 'AwsSolutions-IAM5',
+          reason: 'The role needs access to all the objects in the bucket.',
+          appliesTo: [{
+            regex: '/^Resource::<.*\\.Arn>\\/\\*$/',
+          }],
+        },
+      ],
+      true,
+    );
+
+    /**
+     * Suppress cdk-nag violations for the BucketNotificationsHandler Lambda
+     * that CDK automatically creates for S3 event notifications.
+     * Apply at stack level since the handler is created there.
+     */
+    Aspects.of(Stack.of(this)).add({
+      visit(node: Construct) {
+        // Suppress IAM4 for the BucketNotificationsHandler role
+        if (node instanceof iam.CfnRole && node.node.path.includes('BucketNotificationsHandler')) {
+          NagSuppressions.addResourceSuppressions(
+            node,
+            [
+              {
+                id: 'AwsSolutions-IAM4',
+                reason: 'The BucketNotificationsHandler Lambda is created by CDK and uses the standard AWSLambdaBasicExecutionRole managed policy.',
+                appliesTo: ['Policy::arn:<AWS::Partition>:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'],
+              },
+            ],
+          );
+        }
+
+        // Suppress IAMNoInlinePolicy for the BucketNotificationsHandler policy
+        if (node instanceof iam.CfnPolicy && node.node.path.includes('BucketNotificationsHandler')) {
+          NagSuppressions.addResourceSuppressions(
+            node,
+            [
+              {
+                id: 'NIST.800.53.R5-IAMNoInlinePolicy',
+                reason: 'The BucketNotificationsHandler Lambda is created by CDK and uses inline policies for its custom resource implementation.',
+              },
+            ],
+          );
+        }
+      },
+    });
 
     /**
      * Output the bucket name, bucket ARN, queue name, and role name.

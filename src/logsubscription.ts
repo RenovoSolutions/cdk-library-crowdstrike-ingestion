@@ -1,6 +1,8 @@
 import {
+  Annotations,
   Stack,
   aws_iam as iam,
+  aws_kms as kms,
   aws_logs as logs,
 } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
@@ -30,6 +32,17 @@ export interface CrowdStrikeLogSubscriptionProps {
    * @default - a new role will be created.
    */
   readonly role?: iam.IRole;
+  /**
+   * The KMS key attached to the log group, if any.
+   * If this is provided, the necessary KMS permissions will be added to the role.
+   * If not provided, a warning will be issued to ensure that the log group is not encrypted,
+   * because deployment will fail due to missing permissions if a KMS key is used and not accounted for.
+   * If a role is provided, it is assumed that the role has the necessary permissions, and a warning
+   * will not be issued if a KMS key is not provided.
+   *
+   * @default - no KMS key.
+   */
+  readonly kmsKey?: kms.IKey;
 };
 
 /**
@@ -60,28 +73,46 @@ export class CrowdStrikeLogSubscription extends Construct {
   constructor(scope: Construct, id: string, props: CrowdStrikeLogSubscriptionProps) {
     super(scope, id);
 
+    /**
+    * If a role is provided, assume it has the necessary permissions.
+    * If we are creating a new role and no KMS key is provided, issue a warning
+    * to check that the log group is not encrypted, or deployment will fail.
+    */
+    if (!props.kmsKey && !props.role) {
+      Annotations.of(this).addWarningV2('@renovosolutions/cdk-library-crowdstrike-ingestion:subscription-without-kms-key', 'No KMS key provided; ensure that the log group is not encrypted, or deployment will fail.');
+    }
+
     this.logGroup = props.logGroup;
 
     // If a role is provided, use it; otherwise, create a new role.
     if (props.role) {
       this.role = props.role;
     } else {
+      const policy = new iam.ManagedPolicy(this, 'Policy', {
+        statements: [
+          new iam.PolicyStatement({
+            effect: iam.Effect.ALLOW,
+            actions: [
+              'logs:PutSubscriptionFilter',
+              'logs:DescribeSubscriptionFilters',
+            ],
+            resources: [props.logDestinationArn],
+          }),
+          props.kmsKey ? new iam.PolicyStatement({
+            effect: iam.Effect.ALLOW,
+            actions: [
+              'kms:Decrypt',
+              'kms:GenerateDataKey',
+            ],
+            resources: [props.kmsKey.keyArn],
+          }) : undefined,
+        ].filter((statement): statement is iam.PolicyStatement => statement !== undefined,
+        ),
+      });
+
       this.role = new iam.Role(this, 'Role', {
         assumedBy: new iam.ServicePrincipal(`logs.${Stack.of(this).region}.amazonaws.com`),
-        inlinePolicies: {
-          CrossAccountPolicy: new iam.PolicyDocument({
-            statements: [
-              new iam.PolicyStatement({
-                effect: iam.Effect.ALLOW,
-                actions: [
-                  'logs:PutSubscriptionFilter',
-                  'logs:DescribeSubscriptionFilters',
-                ],
-                resources: [props.logDestinationArn],
-              }),
-            ],
-          }),
-        },
+        managedPolicies: [policy],
       });
     }
 

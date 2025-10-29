@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`CrowdStrikeBucket creates bucket with default properties 1`] = `
 {
@@ -172,12 +172,25 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "python3.11",
+        "Runtime": "python3.13",
         "Timeout": 300,
       },
       "Type": "AWS::Lambda::Function",
     },
     "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC": {
+      "Metadata": {
+        "cdk_nag": {
+          "rules_to_suppress": [
+            {
+              "applies_to": [
+                "Policy::arn:<AWS::Partition>:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+              "id": "AwsSolutions-IAM4",
+              "reason": "The BucketNotificationsHandler Lambda is created by CDK and uses the standard AWSLambdaBasicExecutionRole managed policy.",
+            },
+          ],
+        },
+      },
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Statement": [
@@ -209,13 +222,28 @@ def sort_filter_rules(json_obj):
       "Type": "AWS::IAM::Role",
     },
     "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36": {
+      "Metadata": {
+        "cdk_nag": {
+          "rules_to_suppress": [
+            {
+              "id": "NIST.800.53.R5-IAMNoInlinePolicy",
+              "reason": "The BucketNotificationsHandler Lambda is created by CDK and uses inline policies for its custom resource implementation.",
+            },
+          ],
+        },
+      },
       "Properties": {
         "PolicyDocument": {
           "Statement": [
             {
               "Action": "s3:PutBucketNotification",
               "Effect": "Allow",
-              "Resource": "*",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "TestBucket560B80BC",
+                  "Arn",
+                ],
+              },
             },
           ],
           "Version": "2012-10-17",
@@ -231,6 +259,37 @@ def sort_filter_rules(json_obj):
     },
     "TestBucket560B80BC": {
       "DeletionPolicy": "RetainExceptOnCreate",
+      "Metadata": {
+        "cdk_nag": {
+          "rules_to_suppress": [
+            {
+              "id": "NIST.800.53.R5-S3DefaultEncryptionKMS",
+              "reason": "Not using KMS encryption due to complexity with CrowdStrike integration.",
+            },
+            {
+              "id": "NIST.800.53.R5-S3BucketReplicationEnabled",
+              "reason": "Replication is not required for CrowdStrike ingestion buckets because the data is sent directly to CrowdStrike.",
+            },
+            {
+              "id": "NIST.800.53.R5-S3BucketLoggingEnabled",
+              "reason": "Access logging is not required for CrowdStrike ingestion buckets because they are normally themselves access log destinations.",
+            },
+            {
+              "id": "AwsSolutions-S1",
+              "reason": "Access logging is not required for CrowdStrike ingestion buckets because they are normally themselves access log destinations.",
+            },
+            {
+              "applies_to": [
+                {
+                  "regex": "/^Resource::<.*\\.Arn>\\/\\*$/",
+                },
+              ],
+              "id": "AwsSolutions-IAM5",
+              "reason": "The bucket policy needs to grant access to all the objects in the bucket to be useful.",
+            },
+          ],
+        },
+      },
       "Properties": {
         "BucketEncryption": {
           "ServerSideEncryptionConfiguration": [
@@ -255,8 +314,115 @@ def sort_filter_rules(json_obj):
       "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Retain",
     },
+    "TestBucketBucketAccessPolicyC6E4C81A": {
+      "Metadata": {
+        "cdk_nag": {
+          "rules_to_suppress": [
+            {
+              "id": "NIST.800.53.R5-S3DefaultEncryptionKMS",
+              "reason": "Not using KMS encryption due to complexity with CrowdStrike integration.",
+            },
+            {
+              "id": "NIST.800.53.R5-S3BucketReplicationEnabled",
+              "reason": "Replication is not required for CrowdStrike ingestion buckets because the data is sent directly to CrowdStrike.",
+            },
+            {
+              "id": "NIST.800.53.R5-S3BucketLoggingEnabled",
+              "reason": "Access logging is not required for CrowdStrike ingestion buckets because they are normally themselves access log destinations.",
+            },
+            {
+              "id": "AwsSolutions-S1",
+              "reason": "Access logging is not required for CrowdStrike ingestion buckets because they are normally themselves access log destinations.",
+            },
+            {
+              "applies_to": [
+                {
+                  "regex": "/^Resource::<.*\\.Arn>\\/\\*$/",
+                },
+              ],
+              "id": "AwsSolutions-IAM5",
+              "reason": "The bucket policy needs to grant access to all the objects in the bucket to be useful.",
+            },
+          ],
+        },
+      },
+      "Properties": {
+        "Description": "",
+        "Path": "/",
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject",
+                "s3:GetObjectVersion",
+                "s3:GetObjectTagging",
+                "s3:ListBucket",
+                "s3:ListBucketVersions",
+                "s3:GetBucketLocation",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "TestBucket560B80BC",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "TestBucket560B80BC",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::ManagedPolicy",
+    },
     "TestBucketDLQ4922D481": {
       "DeletionPolicy": "Delete",
+      "Metadata": {
+        "cdk_nag": {
+          "rules_to_suppress": [
+            {
+              "id": "NIST.800.53.R5-S3DefaultEncryptionKMS",
+              "reason": "Not using KMS encryption due to complexity with CrowdStrike integration.",
+            },
+            {
+              "id": "NIST.800.53.R5-S3BucketReplicationEnabled",
+              "reason": "Replication is not required for CrowdStrike ingestion buckets because the data is sent directly to CrowdStrike.",
+            },
+            {
+              "id": "NIST.800.53.R5-S3BucketLoggingEnabled",
+              "reason": "Access logging is not required for CrowdStrike ingestion buckets because they are normally themselves access log destinations.",
+            },
+            {
+              "id": "AwsSolutions-S1",
+              "reason": "Access logging is not required for CrowdStrike ingestion buckets because they are normally themselves access log destinations.",
+            },
+            {
+              "applies_to": [
+                {
+                  "regex": "/^Resource::<.*\\.Arn>\\/\\*$/",
+                },
+              ],
+              "id": "AwsSolutions-IAM5",
+              "reason": "The bucket policy needs to grant access to all the objects in the bucket to be useful.",
+            },
+          ],
+        },
+      },
       "Properties": {
         "QueueName": {
           "Fn::Join": [
@@ -274,6 +440,37 @@ def sort_filter_rules(json_obj):
       "UpdateReplacePolicy": "Delete",
     },
     "TestBucketDLQPolicyA30AE17E": {
+      "Metadata": {
+        "cdk_nag": {
+          "rules_to_suppress": [
+            {
+              "id": "NIST.800.53.R5-S3DefaultEncryptionKMS",
+              "reason": "Not using KMS encryption due to complexity with CrowdStrike integration.",
+            },
+            {
+              "id": "NIST.800.53.R5-S3BucketReplicationEnabled",
+              "reason": "Replication is not required for CrowdStrike ingestion buckets because the data is sent directly to CrowdStrike.",
+            },
+            {
+              "id": "NIST.800.53.R5-S3BucketLoggingEnabled",
+              "reason": "Access logging is not required for CrowdStrike ingestion buckets because they are normally themselves access log destinations.",
+            },
+            {
+              "id": "AwsSolutions-S1",
+              "reason": "Access logging is not required for CrowdStrike ingestion buckets because they are normally themselves access log destinations.",
+            },
+            {
+              "applies_to": [
+                {
+                  "regex": "/^Resource::<.*\\.Arn>\\/\\*$/",
+                },
+              ],
+              "id": "AwsSolutions-IAM5",
+              "reason": "The bucket policy needs to grant access to all the objects in the bucket to be useful.",
+            },
+          ],
+        },
+      },
       "Properties": {
         "PolicyDocument": {
           "Statement": [
@@ -312,6 +509,37 @@ def sort_filter_rules(json_obj):
         "TestBucketQueuePolicy37772A6A",
         "TestBucketQueue8E1A8921",
       ],
+      "Metadata": {
+        "cdk_nag": {
+          "rules_to_suppress": [
+            {
+              "id": "NIST.800.53.R5-S3DefaultEncryptionKMS",
+              "reason": "Not using KMS encryption due to complexity with CrowdStrike integration.",
+            },
+            {
+              "id": "NIST.800.53.R5-S3BucketReplicationEnabled",
+              "reason": "Replication is not required for CrowdStrike ingestion buckets because the data is sent directly to CrowdStrike.",
+            },
+            {
+              "id": "NIST.800.53.R5-S3BucketLoggingEnabled",
+              "reason": "Access logging is not required for CrowdStrike ingestion buckets because they are normally themselves access log destinations.",
+            },
+            {
+              "id": "AwsSolutions-S1",
+              "reason": "Access logging is not required for CrowdStrike ingestion buckets because they are normally themselves access log destinations.",
+            },
+            {
+              "applies_to": [
+                {
+                  "regex": "/^Resource::<.*\\.Arn>\\/\\*$/",
+                },
+              ],
+              "id": "AwsSolutions-IAM5",
+              "reason": "The bucket policy needs to grant access to all the objects in the bucket to be useful.",
+            },
+          ],
+        },
+      },
       "Properties": {
         "BucketName": {
           "Ref": "TestBucket560B80BC",
@@ -343,6 +571,37 @@ def sort_filter_rules(json_obj):
       "Type": "Custom::S3BucketNotifications",
     },
     "TestBucketPolicyBA12ED38": {
+      "Metadata": {
+        "cdk_nag": {
+          "rules_to_suppress": [
+            {
+              "id": "NIST.800.53.R5-S3DefaultEncryptionKMS",
+              "reason": "Not using KMS encryption due to complexity with CrowdStrike integration.",
+            },
+            {
+              "id": "NIST.800.53.R5-S3BucketReplicationEnabled",
+              "reason": "Replication is not required for CrowdStrike ingestion buckets because the data is sent directly to CrowdStrike.",
+            },
+            {
+              "id": "NIST.800.53.R5-S3BucketLoggingEnabled",
+              "reason": "Access logging is not required for CrowdStrike ingestion buckets because they are normally themselves access log destinations.",
+            },
+            {
+              "id": "AwsSolutions-S1",
+              "reason": "Access logging is not required for CrowdStrike ingestion buckets because they are normally themselves access log destinations.",
+            },
+            {
+              "applies_to": [
+                {
+                  "regex": "/^Resource::<.*\\.Arn>\\/\\*$/",
+                },
+              ],
+              "id": "AwsSolutions-IAM5",
+              "reason": "The bucket policy needs to grant access to all the objects in the bucket to be useful.",
+            },
+          ],
+        },
+      },
       "Properties": {
         "Bucket": {
           "Ref": "TestBucket560B80BC",
@@ -391,6 +650,37 @@ def sort_filter_rules(json_obj):
     },
     "TestBucketQueue8E1A8921": {
       "DeletionPolicy": "Delete",
+      "Metadata": {
+        "cdk_nag": {
+          "rules_to_suppress": [
+            {
+              "id": "NIST.800.53.R5-S3DefaultEncryptionKMS",
+              "reason": "Not using KMS encryption due to complexity with CrowdStrike integration.",
+            },
+            {
+              "id": "NIST.800.53.R5-S3BucketReplicationEnabled",
+              "reason": "Replication is not required for CrowdStrike ingestion buckets because the data is sent directly to CrowdStrike.",
+            },
+            {
+              "id": "NIST.800.53.R5-S3BucketLoggingEnabled",
+              "reason": "Access logging is not required for CrowdStrike ingestion buckets because they are normally themselves access log destinations.",
+            },
+            {
+              "id": "AwsSolutions-S1",
+              "reason": "Access logging is not required for CrowdStrike ingestion buckets because they are normally themselves access log destinations.",
+            },
+            {
+              "applies_to": [
+                {
+                  "regex": "/^Resource::<.*\\.Arn>\\/\\*$/",
+                },
+              ],
+              "id": "AwsSolutions-IAM5",
+              "reason": "The bucket policy needs to grant access to all the objects in the bucket to be useful.",
+            },
+          ],
+        },
+      },
       "Properties": {
         "QueueName": {
           "Fn::Join": [
@@ -412,11 +702,102 @@ def sort_filter_rules(json_obj):
           },
           "maxReceiveCount": 5,
         },
+        "SqsManagedSseEnabled": true,
       },
       "Type": "AWS::SQS::Queue",
       "UpdateReplacePolicy": "Delete",
     },
+    "TestBucketQueueAccessPolicyE49B9458": {
+      "Metadata": {
+        "cdk_nag": {
+          "rules_to_suppress": [
+            {
+              "id": "NIST.800.53.R5-S3DefaultEncryptionKMS",
+              "reason": "Not using KMS encryption due to complexity with CrowdStrike integration.",
+            },
+            {
+              "id": "NIST.800.53.R5-S3BucketReplicationEnabled",
+              "reason": "Replication is not required for CrowdStrike ingestion buckets because the data is sent directly to CrowdStrike.",
+            },
+            {
+              "id": "NIST.800.53.R5-S3BucketLoggingEnabled",
+              "reason": "Access logging is not required for CrowdStrike ingestion buckets because they are normally themselves access log destinations.",
+            },
+            {
+              "id": "AwsSolutions-S1",
+              "reason": "Access logging is not required for CrowdStrike ingestion buckets because they are normally themselves access log destinations.",
+            },
+            {
+              "applies_to": [
+                {
+                  "regex": "/^Resource::<.*\\.Arn>\\/\\*$/",
+                },
+              ],
+              "id": "AwsSolutions-IAM5",
+              "reason": "The bucket policy needs to grant access to all the objects in the bucket to be useful.",
+            },
+          ],
+        },
+      },
+      "Properties": {
+        "Description": "",
+        "Path": "/",
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "sqs:ReceiveMessage",
+                "sqs:ChangeMessageVisibility",
+                "sqs:GetQueueUrl",
+                "sqs:DeleteMessage",
+                "sqs:GetQueueAttributes",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "TestBucketQueue8E1A8921",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::ManagedPolicy",
+    },
     "TestBucketQueuePolicy37772A6A": {
+      "Metadata": {
+        "cdk_nag": {
+          "rules_to_suppress": [
+            {
+              "id": "NIST.800.53.R5-S3DefaultEncryptionKMS",
+              "reason": "Not using KMS encryption due to complexity with CrowdStrike integration.",
+            },
+            {
+              "id": "NIST.800.53.R5-S3BucketReplicationEnabled",
+              "reason": "Replication is not required for CrowdStrike ingestion buckets because the data is sent directly to CrowdStrike.",
+            },
+            {
+              "id": "NIST.800.53.R5-S3BucketLoggingEnabled",
+              "reason": "Access logging is not required for CrowdStrike ingestion buckets because they are normally themselves access log destinations.",
+            },
+            {
+              "id": "AwsSolutions-S1",
+              "reason": "Access logging is not required for CrowdStrike ingestion buckets because they are normally themselves access log destinations.",
+            },
+            {
+              "applies_to": [
+                {
+                  "regex": "/^Resource::<.*\\.Arn>\\/\\*$/",
+                },
+              ],
+              "id": "AwsSolutions-IAM5",
+              "reason": "The bucket policy needs to grant access to all the objects in the bucket to be useful.",
+            },
+          ],
+        },
+      },
       "Properties": {
         "PolicyDocument": {
           "Statement": [
@@ -477,6 +858,46 @@ def sort_filter_rules(json_obj):
       "Type": "AWS::SQS::QueuePolicy",
     },
     "TestBucketRoleCF6B6A2F": {
+      "Metadata": {
+        "cdk_nag": {
+          "rules_to_suppress": [
+            {
+              "id": "NIST.800.53.R5-S3DefaultEncryptionKMS",
+              "reason": "Not using KMS encryption due to complexity with CrowdStrike integration.",
+            },
+            {
+              "id": "NIST.800.53.R5-S3BucketReplicationEnabled",
+              "reason": "Replication is not required for CrowdStrike ingestion buckets because the data is sent directly to CrowdStrike.",
+            },
+            {
+              "id": "NIST.800.53.R5-S3BucketLoggingEnabled",
+              "reason": "Access logging is not required for CrowdStrike ingestion buckets because they are normally themselves access log destinations.",
+            },
+            {
+              "id": "AwsSolutions-S1",
+              "reason": "Access logging is not required for CrowdStrike ingestion buckets because they are normally themselves access log destinations.",
+            },
+            {
+              "applies_to": [
+                {
+                  "regex": "/^Resource::<.*\\.Arn>\\/\\*$/",
+                },
+              ],
+              "id": "AwsSolutions-IAM5",
+              "reason": "The bucket policy needs to grant access to all the objects in the bucket to be useful.",
+            },
+            {
+              "applies_to": [
+                {
+                  "regex": "/^Resource::<.*\\.Arn>\\/\\*$/",
+                },
+              ],
+              "id": "AwsSolutions-IAM5",
+              "reason": "The role needs access to all the objects in the bucket.",
+            },
+          ],
+        },
+      },
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Statement": [
@@ -497,6 +918,14 @@ def sort_filter_rules(json_obj):
           ],
           "Version": "2012-10-17",
         },
+        "ManagedPolicyArns": [
+          {
+            "Ref": "TestBucketBucketAccessPolicyC6E4C81A",
+          },
+          {
+            "Ref": "TestBucketQueueAccessPolicyE49B9458",
+          },
+        ],
         "RoleName": {
           "Fn::Join": [
             "",
@@ -510,68 +939,6 @@ def sort_filter_rules(json_obj):
         },
       },
       "Type": "AWS::IAM::Role",
-    },
-    "TestBucketRoleDefaultPolicy3121C833": {
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*",
-              ],
-              "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "TestBucket560B80BC",
-                    "Arn",
-                  ],
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      {
-                        "Fn::GetAtt": [
-                          "TestBucket560B80BC",
-                          "Arn",
-                        ],
-                      },
-                      "/*",
-                    ],
-                  ],
-                },
-              ],
-            },
-            {
-              "Action": [
-                "sqs:ReceiveMessage",
-                "sqs:ChangeMessageVisibility",
-                "sqs:GetQueueUrl",
-                "sqs:DeleteMessage",
-                "sqs:GetQueueAttributes",
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "TestBucketQueue8E1A8921",
-                  "Arn",
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "TestBucketRoleDefaultPolicy3121C833",
-        "Roles": [
-          {
-            "Ref": "TestBucketRoleCF6B6A2F",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
     },
   },
   "Rules": {
