@@ -224,7 +224,7 @@ describe('CrowdStrikeBucket', () => {
           ],
         ],
       },
-      EnableKeyRotation: false,
+      EnableKeyRotation: true,
       MultiRegion: true,
     });
 
@@ -435,40 +435,29 @@ describe('CrowdStrikeBucket', () => {
           },
           {
             Action: [
-              's3:DeleteObject*',
               's3:PutObject',
-              's3:PutObjectLegalHold',
-              's3:PutObjectRetention',
-              's3:PutObjectTagging',
-              's3:PutObjectVersionTagging',
-              's3:Abort*',
+              's3:PutObjectAcl',
+              's3:DeleteObject',
+              's3:AbortMultipartUpload',
             ],
             Effect: 'Allow',
             Principal: {
               AWS: '*',
             },
-            Resource: [
-              {
-                'Fn::GetAtt': [
-                  Match.stringLikeRegexp('TestBucket'),
-                  'Arn',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  {
+                    'Fn::GetAtt': [
+                      Match.stringLikeRegexp('TestBucket'),
+                      'Arn',
+                    ],
+                  },
+                  '/*',
                 ],
-              },
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    {
-                      'Fn::GetAtt': [
-                        Match.stringLikeRegexp('TestBucket'),
-                        'Arn',
-                      ],
-                    },
-                    '/*',
-                  ],
-                ],
-              },
-            ],
+              ],
+            },
             Condition: {
               StringEquals: {
                 'aws:PrincipalOrgID': 'o-1234567890',
@@ -508,10 +497,13 @@ describe('CrowdStrikeBucket', () => {
           },
           {
             Action: [
-              'kms:Decrypt',
               'kms:Encrypt',
-              'kms:ReEncrypt*',
-              'kms:GenerateDataKey*',
+              'kms:Decrypt',
+              'kms:ReEncryptTo',
+              'kms:ReEncryptFrom',
+              'kms:GenerateDataKey',
+              'kms:GenerateDataKeyWithoutPlaintext',
+              'kms:DescribeKey',
             ],
             Effect: 'Allow',
             Principal: {
@@ -686,15 +678,18 @@ describe('CrowdStrikeBucket', () => {
     }
     expect(errors).toHaveLength(0);
 
-    // Verify role has permissions to read from bucket and consume messages from SQS queue
-    template.hasResourceProperties('AWS::IAM::Policy', {
+    // Verify role has permissions to read from bucket (managed policy)
+    template.hasResourceProperties('AWS::IAM::ManagedPolicy', {
       PolicyDocument: {
         Statement: [
           {
             Action: [
-              's3:GetObject*',
-              's3:GetBucket*',
-              's3:List*',
+              's3:GetObject',
+              's3:GetObjectVersion',
+              's3:GetObjectTagging',
+              's3:ListBucket',
+              's3:ListBucketVersions',
+              's3:GetBucketLocation',
             ],
             Effect: 'Allow',
             Resource: [
@@ -720,6 +715,14 @@ describe('CrowdStrikeBucket', () => {
               },
             ],
           },
+        ],
+      },
+    });
+
+    // Verify role has permissions to consume messages from SQS queue (managed policy)
+    template.hasResourceProperties('AWS::IAM::ManagedPolicy', {
+      PolicyDocument: {
+        Statement: [
           {
             Action: [
               'sqs:ReceiveMessage',
