@@ -832,7 +832,7 @@ The metric configuration to add.
 
 ---
 
-##### ~~`isConstruct`~~ <a name="isConstruct" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.isConstruct"></a>
+##### `isConstruct` <a name="isConstruct" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.isConstruct"></a>
 
 ```typescript
 import { CrowdStrikeBucket } from '@renovosolutions/cdk-library-crowdstrike-ingestion'
@@ -841,6 +841,20 @@ CrowdStrikeBucket.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
+
+Use this method instead of `instanceof` to properly detect `Construct`
+instances, even when the construct library is symlinked.
+
+Explanation: in JavaScript, multiple copies of the `constructs` library on
+disk are seen as independent, completely different libraries. As a
+consequence, the class `Construct` in each copy of the `constructs` library
+is seen as a different class, and an instance of one class will not test as
+`instanceof` the other class. `npm install` will not create installations
+like this, but users may manually symlink construct libraries together or
+use a monorepo tool: in those cases, multiple copies of the `constructs`
+library can be accidentally installed, and `instanceof` will behave
+unpredictably. It is safest to avoid using `instanceof`, and using
+this type-testing method instead.
 
 ###### `x`<sup>Required</sup> <a name="x" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.isConstruct.parameter.x"></a>
 
@@ -1024,6 +1038,7 @@ allow legacy bucket naming style, default is false.
 | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.property.bucketDomainName">bucketDomainName</a></code> | <code>string</code> | The IPv4 DNS name of the specified bucket. |
 | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.property.bucketDualStackDomainName">bucketDualStackDomainName</a></code> | <code>string</code> | The IPv6 DNS name of the specified bucket. |
 | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.property.bucketName">bucketName</a></code> | <code>string</code> | The name of the bucket. |
+| <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.property.bucketRef">bucketRef</a></code> | <code>aws-cdk-lib.aws_s3.BucketReference</code> | A reference to a Bucket resource. |
 | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.property.bucketRegionalDomainName">bucketRegionalDomainName</a></code> | <code>string</code> | The regional domain name of the specified bucket. |
 | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.property.bucketWebsiteDomainName">bucketWebsiteDomainName</a></code> | <code>string</code> | The Domain name of the static website. |
 | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.property.bucketWebsiteUrl">bucketWebsiteUrl</a></code> | <code>string</code> | The URL of the static website. |
@@ -1125,6 +1140,18 @@ public readonly bucketName: string;
 - *Type:* string
 
 The name of the bucket.
+
+---
+
+##### `bucketRef`<sup>Required</sup> <a name="bucketRef" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.property.bucketRef"></a>
+
+```typescript
+public readonly bucketRef: BucketReference;
+```
+
+- *Type:* aws-cdk-lib.aws_s3.BucketReference
+
+A reference to a Bucket resource.
 
 ---
 
@@ -1342,7 +1369,7 @@ Returns a string representation of this construct.
 
 ---
 
-##### ~~`isConstruct`~~ <a name="isConstruct" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeLogSubscription.isConstruct"></a>
+##### `isConstruct` <a name="isConstruct" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeLogSubscription.isConstruct"></a>
 
 ```typescript
 import { CrowdStrikeLogSubscription } from '@renovosolutions/cdk-library-crowdstrike-ingestion'
@@ -1351,6 +1378,20 @@ CrowdStrikeLogSubscription.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
+
+Use this method instead of `instanceof` to properly detect `Construct`
+instances, even when the construct library is symlinked.
+
+Explanation: in JavaScript, multiple copies of the `constructs` library on
+disk are seen as independent, completely different libraries. As a
+consequence, the class `Construct` in each copy of the `constructs` library
+is seen as a different class, and an instance of one class will not test as
+`instanceof` the other class. `npm install` will not create installations
+like this, but users may manually symlink construct libraries together or
+use a monorepo tool: in those cases, multiple copies of the `constructs`
+library can be accidentally installed, and `instanceof` will behave
+unpredictably. It is safest to avoid using `instanceof`, and using
+this type-testing method instead.
 
 ###### `x`<sup>Required</sup> <a name="x" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeLogSubscription.isConstruct.parameter.x"></a>
 

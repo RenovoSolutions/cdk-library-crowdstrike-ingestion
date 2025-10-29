@@ -2,7 +2,7 @@ import { awscdk, javascript } from 'projen';
 const project = new awscdk.AwsCdkConstructLibrary({
   author: 'Renovo Solutions',
   authorAddress: 'webmaster+cdk@renovo1.com',
-  cdkVersion: '2.202.0',
+  cdkVersion: '2.221.0',
   defaultReleaseBranch: 'master',
   jsiiVersion: '~5.8.0',
   name: '@renovosolutions/cdk-library-crowdstrike-ingestion',
@@ -19,10 +19,28 @@ const project = new awscdk.AwsCdkConstructLibrary({
     'crowdstrike',
     'projen',
   ],
+  buildWorkflow: false,
+  releaseWorkflow: false,
   depsUpgrade: true,
   depsUpgradeOptions: {
     workflow: false,
     exclude: ['projen'],
+  },
+  githubOptions: {
+    pullRequestLint: false,
+    pullRequestLintOptions: {
+      semanticTitle: true,
+      semanticTitleOptions: {
+        types: [
+          'chore',
+          'docs',
+          'feat',
+          'fix',
+          'ci',
+          'refactor',
+        ],
+      },
+    },
   },
   stale: false,
   releaseToNpm: true,
@@ -30,6 +48,11 @@ const project = new awscdk.AwsCdkConstructLibrary({
   npmAccess: javascript.NpmAccess.PUBLIC,
   docgen: true,
   eslint: true,
+  tsconfigDev: {
+    compilerOptions: {
+      isolatedModules: true,
+    },
+  },
   publishToPypi: {
     distName: 'renovosolutions.aws-cdk-crowdstrike-ingestion',
     module: 'renovosolutions_crowdstrike_ingestion',
@@ -40,10 +63,14 @@ const project = new awscdk.AwsCdkConstructLibrary({
   },
 });
 
+// Ignore the release workflow file so it's not committed to git
+project.gitignore.exclude('!/.github/workflows/release.yml');
+project.gitignore.addPatterns('.github/workflows/release.yml');
+
 new javascript.UpgradeDependencies(project, {
   include: ['projen'],
   taskName: 'upgrade-projen',
-  workflow: true,
+  workflow: false,
   workflowOptions: {
     schedule: javascript.UpgradeDependenciesSchedule.WEEKLY,
   },
