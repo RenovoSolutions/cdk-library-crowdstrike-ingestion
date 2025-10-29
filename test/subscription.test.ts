@@ -1,12 +1,18 @@
 import {
+  Aspects,
   Stack,
   aws_iam as iam,
   aws_logs as logs,
 } from 'aws-cdk-lib';
 import {
+  Annotations,
   Match,
   Template,
 } from 'aws-cdk-lib/assertions';
+import {
+  AwsSolutionsChecks,
+  NIST80053R5Checks,
+} from 'cdk-nag';
 import { CrowdStrikeLogSubscription } from '../src/logsubscription';
 
 describe('CrowdStrikeLogSubscription', () => {
@@ -29,8 +35,22 @@ describe('CrowdStrikeLogSubscription', () => {
       logDestinationArn,
     });
 
+    // Apply cdk-nag aspects
+    Aspects.of(stack).add(new AwsSolutionsChecks());
+    Aspects.of(stack).add(new NIST80053R5Checks());
+
     // THEN
     const template = Template.fromStack(stack);
+
+    // Check for cdk-nag errors
+    const errors = Annotations.fromStack(stack).findError('*', Match.anyValue());
+    if (errors.length > 0) {
+      console.error('Error Annotations:');
+      errors.forEach(error => {
+        console.error(`  [${error.id}] ${error.entry.data}`);
+      });
+    }
+    expect(errors).toHaveLength(0);
 
     // Verify subscription filter creation with expected properties
     template.hasResourceProperties('AWS::Logs::SubscriptionFilter', {
@@ -95,8 +115,22 @@ describe('CrowdStrikeLogSubscription', () => {
       filterPattern: '{ $.eventType = "UserAuthentication" }',
     });
 
+    // Apply cdk-nag aspects
+    Aspects.of(stack).add(new AwsSolutionsChecks());
+    Aspects.of(stack).add(new NIST80053R5Checks());
+
     // THEN
     const template = Template.fromStack(stack);
+
+    // Check for cdk-nag errors
+    const errors = Annotations.fromStack(stack).findError('*', Match.anyValue());
+    if (errors.length > 0) {
+      console.error('Error Annotations:');
+      errors.forEach(error => {
+        console.error(`  [${error.id}] ${error.entry.data}`);
+      });
+    }
+    expect(errors).toHaveLength(0);
 
     // Verify subscription filter with custom pattern
     template.hasResourceProperties('AWS::Logs::SubscriptionFilter', {
@@ -117,8 +151,22 @@ describe('CrowdStrikeLogSubscription', () => {
       role: existingRole,
     });
 
+    // Apply cdk-nag aspects
+    Aspects.of(stack).add(new AwsSolutionsChecks());
+    Aspects.of(stack).add(new NIST80053R5Checks());
+
     // THEN
     const template = Template.fromStack(stack);
+
+    // Check for cdk-nag errors
+    const errors = Annotations.fromStack(stack).findError('*', Match.anyValue());
+    if (errors.length > 0) {
+      console.error('Error Annotations:');
+      errors.forEach(error => {
+        console.error(`  [${error.id}] ${error.entry.data}`);
+      });
+    }
+    expect(errors).toHaveLength(0);
 
     // Verify subscription filter uses the provided role
     template.hasResourceProperties('AWS::Logs::SubscriptionFilter', {
@@ -141,8 +189,22 @@ describe('CrowdStrikeLogSubscription', () => {
       logDestinationArn,
     });
 
+    // Apply cdk-nag aspects
+    Aspects.of(stack).add(new AwsSolutionsChecks());
+    Aspects.of(stack).add(new NIST80053R5Checks());
+
     // THEN
     const template = Template.fromStack(stack);
+
+    // Check for cdk-nag errors
+    const errors = Annotations.fromStack(stack).findError('*', Match.anyValue());
+    if (errors.length > 0) {
+      console.error('Error Annotations:');
+      errors.forEach(error => {
+        console.error(`  [${error.id}] ${error.entry.data}`);
+      });
+    }
+    expect(errors).toHaveLength(0);
 
     // Verify the subscription filter references the created role
     template.hasResourceProperties('AWS::Logs::SubscriptionFilter', {
@@ -165,8 +227,22 @@ describe('CrowdStrikeLogSubscription', () => {
       logDestinationArn: crossRegionDestination,
     });
 
+    // Apply cdk-nag aspects
+    Aspects.of(stack).add(new AwsSolutionsChecks());
+    Aspects.of(stack).add(new NIST80053R5Checks());
+
     // THEN
     const template = Template.fromStack(stack);
+
+    // Check for cdk-nag errors
+    const errors = Annotations.fromStack(stack).findError('*', Match.anyValue());
+    if (errors.length > 0) {
+      console.error('Error Annotations:');
+      errors.forEach(error => {
+        console.error(`  [${error.id}] ${error.entry.data}`);
+      });
+    }
+    expect(errors).toHaveLength(0);
 
     // Verify the destination ARN is set correctly
     template.hasResourceProperties('AWS::Logs::SubscriptionFilter', {

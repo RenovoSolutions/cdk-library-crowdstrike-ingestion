@@ -21,6 +21,9 @@ const project = new awscdk.AwsCdkConstructLibrary({
   ],
   buildWorkflow: false,
   releaseWorkflow: false,
+  deps: [
+    'cdk-nag@2.37.55',
+  ],
   depsUpgrade: true,
   depsUpgradeOptions: {
     workflow: false,
