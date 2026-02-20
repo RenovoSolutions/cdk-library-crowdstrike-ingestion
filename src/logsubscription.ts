@@ -1,5 +1,4 @@
 import {
-  Annotations,
   Stack,
   aws_iam as iam,
   aws_kms as kms,
@@ -72,15 +71,6 @@ export class CrowdStrikeLogSubscription extends Construct {
    */
   constructor(scope: Construct, id: string, props: CrowdStrikeLogSubscriptionProps) {
     super(scope, id);
-
-    /**
-    * If a role is provided, assume it has the necessary permissions.
-    * If we are creating a new role and no KMS key is provided, issue a warning
-    * to check that the log group is not encrypted, or deployment will fail.
-    */
-    if (!props.kmsKey && !props.role) {
-      Annotations.of(this).addWarningV2('@renovosolutions/cdk-library-crowdstrike-ingestion:subscription-without-kms-key', 'No KMS key provided; ensure that the log group is not encrypted, or deployment will fail.');
-    }
 
     this.logGroup = props.logGroup;
 

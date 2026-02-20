@@ -12,7 +12,6 @@ import {
 } from 'aws-cdk-lib/assertions';
 import {
   AwsSolutionsChecks,
-  NagSuppressions,
   NIST80053R5Checks,
 } from 'cdk-nag';
 import { CrowdStrikeLogSubscription } from '../src/logsubscription';
@@ -335,63 +334,6 @@ describe('CrowdStrikeLogSubscription', () => {
           },
         ],
       },
-    });
-  });
-
-  test('warns when no KMS key', () => {
-    // GIVEN
-    const unencryptedLogGroup = new logs.LogGroup(stack, 'UnencryptedLogGroup', {
-      logGroupName: 'unencrypted-log-group',
-    });
-
-    // Suppress the expected NIST error about unencrypted log group
-    // since the point of this test is to verify the construct's warning behavior
-    NagSuppressions.addResourceSuppressions(
-      unencryptedLogGroup,
-      [
-        {
-          id: 'NIST.800.53.R5-CloudWatchLogGroupEncrypted',
-          reason: 'This test intentionally uses an unencrypted log group to verify warning behavior',
-        },
-      ],
-    );
-
-    // WHEN
-    new CrowdStrikeLogSubscription(stack, 'TestSubscription', {
-      logGroup: unencryptedLogGroup,
-      logDestinationArn,
-    });
-
-    // Apply cdk-nag aspects
-    Aspects.of(stack).add(new AwsSolutionsChecks());
-    Aspects.of(stack).add(new NIST80053R5Checks());
-
-    // THEN
-    const template = Template.fromStack(stack);
-
-    // Check for cdk-nag errors - should have none due to suppression
-    const errors = Annotations.fromStack(stack).findError('*', Match.anyValue());
-    if (errors.length > 0) {
-      console.error('Error Annotations:');
-      errors.forEach(error => {
-        console.error(`  [${error.id}] ${error.entry.data}`);
-      });
-    }
-    expect(errors).toHaveLength(0);
-
-    // Verify the warning annotation about missing KMS key
-    Annotations.fromStack(stack).hasWarning(
-      '/Default/TestSubscription',
-      Match.stringLikeRegexp('No KMS key provided; ensure that the log group is not encrypted, or deployment will fail.'),
-    );
-
-    // Verify subscription filter was still created
-    template.hasResourceProperties('AWS::Logs::SubscriptionFilter', {
-      LogGroupName: {
-        Ref: Match.stringLikeRegexp('UnencryptedLogGroup'),
-      },
-      FilterPattern: '%.%',
-      DestinationArn: logDestinationArn,
     });
   });
 });
