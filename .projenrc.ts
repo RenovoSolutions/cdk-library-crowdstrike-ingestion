@@ -2,9 +2,10 @@ import { awscdk, javascript } from 'projen';
 const project = new awscdk.AwsCdkConstructLibrary({
   author: 'Renovo Solutions',
   authorAddress: 'webmaster+cdk@renovo1.com',
-  cdkVersion: '2.221.0',
+  cdkVersion: '2.239.0',
+  constructsVersion: '10.5.1',
   defaultReleaseBranch: 'master',
-  jsiiVersion: '~5.8.0',
+  jsiiVersion: '~5.9',
   name: '@renovosolutions/cdk-library-crowdstrike-ingestion',
   projenrcTs: true,
   repositoryUrl: 'https://github.com/RenovoSolutions/cdk-library-crowdstrike-ingestion.git',

@@ -51,6 +51,7 @@ The properties for the bucket, queue, role, and optional KMS key.
 | **Name** | **Description** |
 | --- | --- |
 | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.with">with</a></code> | Applies one or more mixins to this construct. |
 | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.applyRemovalPolicy">applyRemovalPolicy</a></code> | Apply the given removal policy to this resource. |
 | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.addEventNotification">addEventNotification</a></code> | Adds a bucket notification event destination. |
 | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.addObjectCreatedNotification">addObjectCreatedNotification</a></code> | Subscribes a destination to receive notifications when an object is created in the bucket. |
@@ -60,13 +61,14 @@ The properties for the bucket, queue, role, and optional KMS key.
 | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.arnForObjects">arnForObjects</a></code> | Returns an ARN that represents all objects within the bucket that match the key pattern specified. |
 | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.enableEventBridgeNotification">enableEventBridgeNotification</a></code> | Enables event bridge notification, causing all events below to be sent to EventBridge:. |
 | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.grantDelete">grantDelete</a></code> | Grants s3:DeleteObject* permission to an IAM principal for objects in this bucket. |
+| <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.grantOnKey">grantOnKey</a></code> | Gives permissions to a grantable entity to perform actions on the encryption key. |
 | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.grantPublicAccess">grantPublicAccess</a></code> | Allows unrestricted access to objects from this bucket. |
 | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.grantPut">grantPut</a></code> | Grants s3:PutObject* and s3:Abort* permissions for this bucket to an IAM principal. |
-| <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.grantPutAcl">grantPutAcl</a></code> | Grant the given IAM identity permissions to modify the ACLs of objects in the given Bucket. |
+| <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.grantPutAcl">grantPutAcl</a></code> | The use of this method is discouraged. Please use `grants.putAcl()` instead. |
 | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.grantRead">grantRead</a></code> | Grant read permissions for this bucket and it's contents to an IAM principal (Role/Group/User). |
-| <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.grantReadWrite">grantReadWrite</a></code> | Grants read/write permissions for this bucket and it's contents to an IAM principal (Role/Group/User). |
+| <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.grantReadWrite">grantReadWrite</a></code> | The use of this method is discouraged. Please use `grants.readWrite()` instead. |
 | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.grantReplicationPermission">grantReplicationPermission</a></code> | Grant replication permission to a principal. This method allows the principal to perform replication operations on this bucket. |
-| <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.grantWrite">grantWrite</a></code> | Grant write permissions to this bucket to an IAM principal. |
+| <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.grantWrite">grantWrite</a></code> | The use of this method is discouraged. Please use `grants.write()` instead. |
 | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.onCloudTrailEvent">onCloudTrailEvent</a></code> | Define a CloudWatch event that triggers when something happens to this repository. |
 | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.onCloudTrailPutObject">onCloudTrailPutObject</a></code> | Defines an AWS CloudWatch event that triggers when an object is uploaded to the specified paths (keys) in this bucket using the PutObject API call. |
 | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.onCloudTrailWriteObject">onCloudTrailWriteObject</a></code> | Defines an AWS CloudWatch event that triggers when an object at the specified paths (keys) in this bucket are written to. |
@@ -88,6 +90,27 @@ public toString(): string
 ```
 
 Returns a string representation of this construct.
+
+##### `with` <a name="with" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.with"></a>
+
+```typescript
+public with(mixins: ...IMixin[]): IConstruct
+```
+
+Applies one or more mixins to this construct.
+
+Mixins are applied in order. The list of constructs is captured at the
+start of the call, so constructs added by a mixin will not be visited.
+Use multiple `with()` calls if subsequent mixins should apply to added
+constructs.
+
+###### `mixins`<sup>Required</sup> <a name="mixins" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.with.parameter.mixins"></a>
+
+- *Type:* ...constructs.IMixin[]
+
+The mixins to apply.
+
+---
 
 ##### `applyRemovalPolicy` <a name="applyRemovalPolicy" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.applyRemovalPolicy"></a>
 
@@ -311,6 +334,10 @@ public grantDelete(identity: IGrantable, objectsKeyPattern?: any): Grant
 
 Grants s3:DeleteObject* permission to an IAM principal for objects in this bucket.
 
+The use of this method is discouraged. Please use `grants.delete()` instead.
+
+[disable-awslint:no-grants]
+
 ###### `identity`<sup>Required</sup> <a name="identity" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.grantDelete.parameter.identity"></a>
 
 - *Type:* aws-cdk-lib.aws_iam.IGrantable
@@ -326,6 +353,26 @@ The principal.
 Restrict the permission to a certain key pattern (default '*').
 
 Parameter type is `any` but `string` should be passed in.
+
+---
+
+##### `grantOnKey` <a name="grantOnKey" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.grantOnKey"></a>
+
+```typescript
+public grantOnKey(grantee: IGrantable, actions: ...string[]): GrantOnKeyResult
+```
+
+Gives permissions to a grantable entity to perform actions on the encryption key.
+
+###### `grantee`<sup>Required</sup> <a name="grantee" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.grantOnKey.parameter.grantee"></a>
+
+- *Type:* aws-cdk-lib.aws_iam.IGrantable
+
+---
+
+###### `actions`<sup>Required</sup> <a name="actions" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.grantOnKey.parameter.actions"></a>
+
+- *Type:* ...string[]
 
 ---
 
@@ -356,6 +403,11 @@ Note that if this `IBucket` refers to an existing bucket, possibly not
 managed by CloudFormation, this method will have no effect, since it's
 impossible to modify the policy of an existing bucket.
 
+
+The use of this method is discouraged. Please use `grants.publicAccess()` instead.
+
+[disable-awslint:no-grants]
+
 ###### `allowedActions`<sup>Required</sup> <a name="allowedActions" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.grantPublicAccess.parameter.allowedActions"></a>
 
 - *Type:* ...string[]
@@ -385,6 +437,11 @@ Grants s3:PutObject* and s3:Abort* permissions for this bucket to an IAM princip
 If encryption is used, permission to use the key to encrypt the contents
 of written files will also be granted to the same principal.
 
+
+The use of this method is discouraged. Please use `grants.put()` instead.
+
+[disable-awslint:no-grants]
+
 ###### `identity`<sup>Required</sup> <a name="identity" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.grantPut.parameter.identity"></a>
 
 - *Type:* aws-cdk-lib.aws_iam.IGrantable
@@ -409,11 +466,9 @@ Parameter type is `any` but `string` should be passed in.
 public grantPutAcl(identity: IGrantable, objectsKeyPattern?: string): Grant
 ```
 
-Grant the given IAM identity permissions to modify the ACLs of objects in the given Bucket.
+The use of this method is discouraged. Please use `grants.putAcl()` instead.
 
-If your application has the '@aws-cdk/aws-s3:grantWriteWithoutAcl' feature flag set,
-calling `grantWrite` or `grantReadWrite` no longer grants permissions to modify the ACLs of the objects;
-in this case, if you need to modify object ACLs, call this method explicitly.
+[disable-awslint:no-grants]
 
 ###### `identity`<sup>Required</sup> <a name="identity" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.grantPutAcl.parameter.identity"></a>
 
@@ -437,6 +492,11 @@ Grant read permissions for this bucket and it's contents to an IAM principal (Ro
 
 If encryption is used, permission to use the key to decrypt the contents
 of the bucket will also be granted to the same principal.
+
+
+The use of this method is discouraged. Please use `grants.read()` instead.
+
+[disable-awslint:no-grants]
 
 ###### `identity`<sup>Required</sup> <a name="identity" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.grantRead.parameter.identity"></a>
 
@@ -462,18 +522,9 @@ Parameter type is `any` but `string` should be passed in.
 public grantReadWrite(identity: IGrantable, objectsKeyPattern?: any): Grant
 ```
 
-Grants read/write permissions for this bucket and it's contents to an IAM principal (Role/Group/User).
+The use of this method is discouraged. Please use `grants.readWrite()` instead.
 
-If an encryption key is used, permission to use the key for
-encrypt/decrypt will also be granted.
-
-Before CDK version 1.85.0, this method granted the `s3:PutObject*` permission that included `s3:PutObjectAcl`,
-which could be used to grant read/write object access to IAM principals in other accounts.
-If you want to get rid of that behavior, update your CDK version to 1.85.0 or later,
-and make sure the `@aws-cdk/aws-s3:grantWriteWithoutAcl` feature flag is set to `true`
-in the `context` key of your cdk.json file.
-If you've already updated, but still need the principal to have permissions to modify the ACLs,
-use the `grantPutAcl` method.
+[disable-awslint:no-grants]
 
 ###### `identity`<sup>Required</sup> <a name="identity" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.grantReadWrite.parameter.identity"></a>
 
@@ -498,6 +549,11 @@ Grant replication permission to a principal. This method allows the principal to
 Note that when calling this function for source or destination buckets that support KMS encryption,
 you need to specify the KMS key for encryption and the KMS key for decryption, respectively.
 
+
+The use of this method is discouraged. Please use `grants.replicationPermission()` instead.
+
+[disable-awslint:no-grants]
+
 ###### `identity`<sup>Required</sup> <a name="identity" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.grantReplicationPermission.parameter.identity"></a>
 
 - *Type:* aws-cdk-lib.aws_iam.IGrantable
@@ -520,18 +576,9 @@ The properties of the replication source and destination buckets.
 public grantWrite(identity: IGrantable, objectsKeyPattern?: any, allowedActionPatterns?: string[]): Grant
 ```
 
-Grant write permissions to this bucket to an IAM principal.
+The use of this method is discouraged. Please use `grants.write()` instead.
 
-If encryption is used, permission to use the key to encrypt the contents
-of written files will also be granted to the same principal.
-
-Before CDK version 1.85.0, this method granted the `s3:PutObject*` permission that included `s3:PutObjectAcl`,
-which could be used to grant read/write object access to IAM principals in other accounts.
-If you want to get rid of that behavior, update your CDK version to 1.85.0 or later,
-and make sure the `@aws-cdk/aws-s3:grantWriteWithoutAcl` feature flag is set to `true`
-in the `context` key of your cdk.json file.
-If you've already updated, but still need the principal to have permissions to modify the ACLs,
-use the `grantPutAcl` method.
+[disable-awslint:no-grants]
 
 ###### `identity`<sup>Required</sup> <a name="identity" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.grantWrite.parameter.identity"></a>
 
@@ -1032,18 +1079,20 @@ allow legacy bucket naming style, default is false.
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
-| <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.property.env">env</a></code> | <code>aws-cdk-lib.ResourceEnvironment</code> | The environment this resource belongs to. |
+| <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.property.env">env</a></code> | <code>aws-cdk-lib.interfaces.ResourceEnvironment</code> | The environment this resource belongs to. |
 | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.property.stack">stack</a></code> | <code>aws-cdk-lib.Stack</code> | The stack in which this resource is defined. |
 | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.property.bucketArn">bucketArn</a></code> | <code>string</code> | The ARN of the bucket. |
 | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.property.bucketDomainName">bucketDomainName</a></code> | <code>string</code> | The IPv4 DNS name of the specified bucket. |
 | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.property.bucketDualStackDomainName">bucketDualStackDomainName</a></code> | <code>string</code> | The IPv6 DNS name of the specified bucket. |
 | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.property.bucketName">bucketName</a></code> | <code>string</code> | The name of the bucket. |
-| <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.property.bucketRef">bucketRef</a></code> | <code>aws-cdk-lib.aws_s3.BucketReference</code> | A reference to a Bucket resource. |
+| <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.property.bucketRef">bucketRef</a></code> | <code>aws-cdk-lib.interfaces.aws_s3.BucketReference</code> | A reference to a Bucket resource. |
 | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.property.bucketRegionalDomainName">bucketRegionalDomainName</a></code> | <code>string</code> | The regional domain name of the specified bucket. |
 | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.property.bucketWebsiteDomainName">bucketWebsiteDomainName</a></code> | <code>string</code> | The Domain name of the static website. |
 | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.property.bucketWebsiteUrl">bucketWebsiteUrl</a></code> | <code>string</code> | The URL of the static website. |
 | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.property.encryptionKey">encryptionKey</a></code> | <code>aws-cdk-lib.aws_kms.IKey</code> | Optional KMS encryption key associated with this bucket. |
 | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.property.isWebsite">isWebsite</a></code> | <code>boolean</code> | If this bucket has been configured for static website hosting. |
+| <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.property.grants">grants</a></code> | <code>aws-cdk-lib.aws_s3.BucketGrants</code> | Collection of grant methods for a Bucket. |
+| <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.property.disallowPublicAccess">disallowPublicAccess</a></code> | <code>boolean</code> | Whether to disallow public access. |
 | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.property.policy">policy</a></code> | <code>aws-cdk-lib.aws_s3.BucketPolicy</code> | The resource policy associated with this bucket. |
 | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.property.replicationRoleArn">replicationRoleArn</a></code> | <code>string</code> | Role used to set up permissions on this bucket for replication. |
 | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.property.queue">queue</a></code> | <code>aws-cdk-lib.aws_sqs.Queue</code> | The SQS queue that receives notifications for new objects in the bucket. |
@@ -1070,16 +1119,17 @@ The tree node.
 public readonly env: ResourceEnvironment;
 ```
 
-- *Type:* aws-cdk-lib.ResourceEnvironment
+- *Type:* aws-cdk-lib.interfaces.ResourceEnvironment
 
 The environment this resource belongs to.
 
-For resources that are created and managed by the CDK
-(generally, those created by creating new class instances like Role, Bucket, etc.),
-this is always the same as the environment of the stack they belong to;
-however, for imported resources
-(those obtained from static methods like fromRoleArn, fromBucketName, etc.),
-that might be different than the stack they were imported into.
+For resources that are created and managed in a Stack (those created by
+creating new class instances like `new Role()`, `new Bucket()`, etc.), this
+is always the same as the environment of the stack they belong to.
+
+For referenced resources (those obtained from referencing methods like
+`Role.fromRoleArn()`, `Bucket.fromBucketName()`, etc.), they might be
+different than the stack they were imported into.
 
 ---
 
@@ -1149,7 +1199,7 @@ The name of the bucket.
 public readonly bucketRef: BucketReference;
 ```
 
-- *Type:* aws-cdk-lib.aws_s3.BucketReference
+- *Type:* aws-cdk-lib.interfaces.aws_s3.BucketReference
 
 A reference to a Bucket resource.
 
@@ -1212,6 +1262,30 @@ public readonly isWebsite: boolean;
 - *Type:* boolean
 
 If this bucket has been configured for static website hosting.
+
+---
+
+##### `grants`<sup>Required</sup> <a name="grants" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.property.grants"></a>
+
+```typescript
+public readonly grants: BucketGrants;
+```
+
+- *Type:* aws-cdk-lib.aws_s3.BucketGrants
+
+Collection of grant methods for a Bucket.
+
+---
+
+##### `disallowPublicAccess`<sup>Optional</sup> <a name="disallowPublicAccess" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeBucket.property.disallowPublicAccess"></a>
+
+```typescript
+public readonly disallowPublicAccess: boolean;
+```
+
+- *Type:* boolean
+
+Whether to disallow public access.
 
 ---
 
@@ -1350,6 +1424,7 @@ The properties for the subscription.
 | **Name** | **Description** |
 | --- | --- |
 | <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeLogSubscription.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeLogSubscription.with">with</a></code> | Applies one or more mixins to this construct. |
 
 ---
 
@@ -1360,6 +1435,27 @@ public toString(): string
 ```
 
 Returns a string representation of this construct.
+
+##### `with` <a name="with" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeLogSubscription.with"></a>
+
+```typescript
+public with(mixins: ...IMixin[]): IConstruct
+```
+
+Applies one or more mixins to this construct.
+
+Mixins are applied in order. The list of constructs is captured at the
+start of the call, so constructs added by a mixin will not be visited.
+Use multiple `with()` calls if subsequent mixins should apply to added
+constructs.
+
+###### `mixins`<sup>Required</sup> <a name="mixins" id="@renovosolutions/cdk-library-crowdstrike-ingestion.CrowdStrikeLogSubscription.with.parameter.mixins"></a>
+
+- *Type:* ...constructs.IMixin[]
+
+The mixins to apply.
+
+---
 
 #### Static Functions <a name="Static Functions" id="Static Functions"></a>
 
