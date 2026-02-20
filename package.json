@@ -17,7 +17,6 @@
     "eslint": "npx projen eslint",
     "package": "npx projen package",
     "package-all": "npx projen package-all",
-    "package:dotnet": "npx projen package:dotnet",
     "package:js": "npx projen package:js",
     "package:python": "npx projen package:python",
     "post-compile": "npx projen post-compile",
@@ -136,10 +135,6 @@
       "python": {
         "distName": "renovosolutions.aws-cdk-crowdstrike-ingestion",
         "module": "renovosolutions_crowdstrike_ingestion"
-      },
-      "dotnet": {
-        "namespace": "renovosolutions",
-        "packageId": "Renovo.AWSCDK.CrowdStrikeIngestion"
       }
     },
     "tsc": {
