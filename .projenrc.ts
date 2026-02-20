@@ -61,10 +61,14 @@ const project = new awscdk.AwsCdkConstructLibrary({
     distName: 'renovosolutions.aws-cdk-crowdstrike-ingestion',
     module: 'renovosolutions_crowdstrike_ingestion',
   },
-  publishToNuget: {
-    dotNetNamespace: 'renovosolutions',
-    packageId: 'Renovo.AWSCDK.CrowdStrikeIngestion',
-  },
+});
+
+project.eslint?.addRules({
+  '@typescript-eslint/no-unused-vars': ['error', {
+    argsIgnorePattern: '^_',
+    varsIgnorePattern: '^_',
+    caughtErrorsIgnorePattern: '^_',
+  }],
 });
 
 // Ignore the release workflow file so it's not committed to git
