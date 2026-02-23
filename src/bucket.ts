@@ -11,7 +11,6 @@ import {
   aws_sqs as sqs,
   aws_ssm as ssm,
 } from 'aws-cdk-lib';
-import { NagSuppressions } from 'cdk-nag';
 import { Construct } from 'constructs';
 
 /**
@@ -307,85 +306,98 @@ export class CrowdStrikeBucket extends s3.Bucket {
       });
     }
 
-    NagSuppressions.addResourceSuppressions(
-      this,
-      [
-        {
-          id: 'NIST.800.53.R5-S3DefaultEncryptionKMS',
-          reason: 'Not using KMS encryption due to complexity with CrowdStrike integration.',
-        },
-        {
-          id: 'NIST.800.53.R5-S3BucketReplicationEnabled',
-          reason: 'Replication is not required for CrowdStrike ingestion buckets because the data is sent directly to CrowdStrike.',
-        },
-        {
-          id: 'NIST.800.53.R5-S3BucketLoggingEnabled',
-          reason: 'Access logging is not required for CrowdStrike ingestion buckets because they are normally themselves access log destinations.',
-        },
-        {
-          id: 'AwsSolutions-S1',
-          reason: 'Access logging is not required for CrowdStrike ingestion buckets because they are normally themselves access log destinations.',
-        },
-        {
-          id: 'AwsSolutions-IAM5',
-          reason: 'The bucket policy needs to grant access to all the objects in the bucket to be useful.',
-          appliesTo: [{
-            regex: '/^Resource::<.*\\.Arn>\\/\\*$/',
-          }],
-        },
-      ],
-      true,
-    );
-
-    NagSuppressions.addResourceSuppressions(
-      this.role,
-      [
-        {
-          id: 'AwsSolutions-IAM5',
-          reason: 'The role needs access to all the objects in the bucket.',
-          appliesTo: [{
-            regex: '/^Resource::<.*\\.Arn>\\/\\*$/',
-          }],
-        },
-      ],
-      true,
-    );
-
     /**
-     * Suppress cdk-nag violations for the BucketNotificationsHandler Lambda
-     * that CDK automatically creates for S3 event notifications.
-     * Apply at stack level since the handler is created there.
+     * This pattern is used to ensure that cdk-nag remains an optional
+     * dependency. If cdk-nag is not installed, the require statement
+     * will fail and we will skip adding suppressions, but the
+     * construct will still work as expected.
      */
-    Aspects.of(Stack.of(this)).add({
-      visit(node: Construct) {
-        // Suppress IAM4 for the BucketNotificationsHandler role
-        if (node instanceof iam.CfnRole && node.node.path.includes('BucketNotificationsHandler')) {
-          NagSuppressions.addResourceSuppressions(
-            node,
-            [
-              {
-                id: 'AwsSolutions-IAM4',
-                reason: 'The BucketNotificationsHandler Lambda is created by CDK and uses the standard AWSLambdaBasicExecutionRole managed policy.',
-                appliesTo: ['Policy::arn:<AWS::Partition>:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'],
-              },
-            ],
-          );
-        }
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { NagSuppressions } = require('cdk-nag') as typeof import('cdk-nag');
 
-        // Suppress IAMNoInlinePolicy for the BucketNotificationsHandler policy
-        if (node instanceof iam.CfnPolicy && node.node.path.includes('BucketNotificationsHandler')) {
-          NagSuppressions.addResourceSuppressions(
-            node,
-            [
-              {
-                id: 'NIST.800.53.R5-IAMNoInlinePolicy',
-                reason: 'The BucketNotificationsHandler Lambda is created by CDK and uses inline policies for its custom resource implementation.',
-              },
-            ],
-          );
-        }
-      },
-    });
+      NagSuppressions.addResourceSuppressions(
+        this,
+        [
+          {
+            id: 'NIST.800.53.R5-S3DefaultEncryptionKMS',
+            reason: 'Not using KMS encryption due to complexity with CrowdStrike integration.',
+          },
+          {
+            id: 'NIST.800.53.R5-S3BucketReplicationEnabled',
+            reason: 'Replication is not required for CrowdStrike ingestion buckets because the data is sent directly to CrowdStrike.',
+          },
+          {
+            id: 'NIST.800.53.R5-S3BucketLoggingEnabled',
+            reason: 'Access logging is not required for CrowdStrike ingestion buckets because they are normally themselves access log destinations.',
+          },
+          {
+            id: 'AwsSolutions-S1',
+            reason: 'Access logging is not required for CrowdStrike ingestion buckets because they are normally themselves access log destinations.',
+          },
+          {
+            id: 'AwsSolutions-IAM5',
+            reason: 'The bucket policy needs to grant access to all the objects in the bucket to be useful.',
+            appliesTo: [{
+              regex: '/^Resource::<.*\\.Arn>\\/\\*$/',
+            }],
+          },
+        ],
+        true,
+      );
+
+      NagSuppressions.addResourceSuppressions(
+        this.role,
+        [
+          {
+            id: 'AwsSolutions-IAM5',
+            reason: 'The role needs access to all the objects in the bucket.',
+            appliesTo: [{
+              regex: '/^Resource::<.*\\.Arn>\\/\\*$/',
+            }],
+          },
+        ],
+        true,
+      );
+
+      /**
+       * Suppress cdk-nag violations for the BucketNotificationsHandler Lambda
+       * that CDK automatically creates for S3 event notifications.
+       * Apply at stack level since the handler is created there.
+       */
+      Aspects.of(Stack.of(this)).add({
+        visit(node: Construct) {
+          // Suppress IAM4 for the BucketNotificationsHandler role
+          if (node instanceof iam.CfnRole && node.node.path.includes('BucketNotificationsHandler')) {
+            NagSuppressions.addResourceSuppressions(
+              node,
+              [
+                {
+                  id: 'AwsSolutions-IAM4',
+                  reason: 'The BucketNotificationsHandler Lambda is created by CDK and uses the standard AWSLambdaBasicExecutionRole managed policy.',
+                  appliesTo: ['Policy::arn:<AWS::Partition>:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'],
+                },
+              ],
+            );
+          }
+
+          // Suppress IAMNoInlinePolicy for the BucketNotificationsHandler policy
+          if (node instanceof iam.CfnPolicy && node.node.path.includes('BucketNotificationsHandler')) {
+            NagSuppressions.addResourceSuppressions(
+              node,
+              [
+                {
+                  id: 'NIST.800.53.R5-IAMNoInlinePolicy',
+                  reason: 'The BucketNotificationsHandler Lambda is created by CDK and uses inline policies for its custom resource implementation.',
+                },
+              ],
+            );
+          }
+        },
+      });
+    } catch {
+      // cdk-nag is not installed; NAG suppressions will not be applied
+    }
 
     /**
      * Output the bucket name, bucket ARN, queue name, and role name.
