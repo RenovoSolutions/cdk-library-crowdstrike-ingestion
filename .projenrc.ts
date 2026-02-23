@@ -66,6 +66,10 @@ const project = new awscdk.AwsCdkConstructLibrary({
   },
 });
 
+project.package.addField('peerDependenciesMeta', {
+  'cdk-nag': { optional: true },
+});
+
 project.eslint?.addRules({
   '@typescript-eslint/no-unused-vars': ['error', {
     argsIgnorePattern: '^_',
